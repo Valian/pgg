@@ -1,4 +1,0 @@
-PGG
-===
-
-Procedural Galaxy Generation

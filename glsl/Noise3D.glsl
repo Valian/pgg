@@ -1,5 +1,3 @@
-
-
 vec3 mod289(vec3 x)
 {
 	return x - floor(x * (1.0 / 289.0)) * 289.0;
@@ -79,49 +77,4 @@ float snoise(vec3 v)
 	m = m * m;
 	return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),
 	dot(p2,x2), dot(p3,x3) ) );
-}
-
-
-#define PLANET_DETAILS_LOW 1
-#define PLANET_DETAILS_MEDIUM 2
-#define PLANET_DETAILS_HIGH 3
-
-
-uniform float waterLevel;
-uniform float planetSeed;
-uniform int planetDetails;
-
-varying float heightFactor;
-
-
-void main()
-{
-	float scaledPlanetSeed = 10000.0 * planetSeed;
-	vec3 planetSeedVector = vec3(scaledPlanetSeed, scaledPlanetSeed, scaledPlanetSeed) + position;
-
-	if(planetDetails == PLANET_DETAILS_LOW)
-	{
-		float a = 0.5 + 0.5 * snoise(0.0001 * planetSeedVector);
-		float b = 0.5 + 0.5 * snoise(0.0003 * planetSeedVector);
-		float c = 0.5 + 0.5 * snoise(0.001 * planetSeedVector);
-
-		heightFactor = 0.65 * a + 0.3 * b + 0.05 * c;
-	}
-	else if(planetDetails == PLANET_DETAILS_MEDIUM)
-	{
-
-	}
-	else if(planetDetails == PLANET_DETAILS_HIGH)
-	{
-
-	}
-
-	if(heightFactor < waterLevel)
-	{
-		gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-	}
-	else
-	{
-		gl_Position = projectionMatrix * modelViewMatrix * vec4(position + 500.0 * (heightFactor - waterLevel) * normal, 1.0);
-	}
 }

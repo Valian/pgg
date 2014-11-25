@@ -3,18 +3,18 @@
 var PGG = function() {
 	this.shaderProvider = new ShaderProvider();
 
-	this.initCameraAndControls = function() {																																																								
-		this.camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000000);
+	this.initCameraAndControls = function() {
+		this.camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 1000000);
 
-		this.controls = new THREE.FlyControls( this.camera );								
+		this.controls = new THREE.FlyControls( this.camera );
 		this.controls.movementSpeed = 10000;
 		this.controls.domElement = document;
 		this.controls.rollSpeed = Math.PI / 24;
 		this.controls.autoForward = false;
 		this.controls.dragToLook = false;
-	};																																																						
+	};
 
-	this.initScene = function() {																																																																										
+	this.initScene = function() {
 		this.scene = new THREE.Scene();
 		this.planetManager = new PlanetManager();
 		//var planet = this.planetManager.createPlanet(0.5);

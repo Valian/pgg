@@ -1,0 +1,9 @@
+
+
+varying float heightFactor;
+
+
+void main()
+{
+	gl_FragColor = vec4(heightFactor, heightFactor, heightFactor, 1.0);
+}

@@ -86,9 +86,50 @@ uniform float planetSeed;
 varying float heightFactor;
 
 
-float ridgedNoise(vec3 v)
+float generateLavaRivers(vec3 v)
 {
-	return 1.0 - abs(snoise(v));
+	float riverFactor = 0.9;
+	float value = 1.0 - abs(snoise(0.0001 * v));
+
+	if(value > riverFactor)
+	{
+		return value;
+	}
+	else
+	{
+		float sum = value;
+		value = 1.0 - abs(snoise(0.0001 * v + vec3(100.0, 100.0, 100.0)));
+		sum += value;
+
+		if(value > riverFactor)
+		{
+			return 0.5 * sum;
+		}
+		else
+		{
+			value = 1.0 - abs(snoise(0.0001 * v + vec3(300.0, -300.0, 300.0)));
+			sum += value;
+
+			if(value > riverFactor)
+			{
+				return 0.3333 * sum;
+			}
+			else
+			{
+				return 0.0;
+			}
+		}
+	}
+}
+
+
+float generatePlanetHeight(vec3 v)
+{
+	float a = 0.5 + 0.5 * snoise(0.0001 * v);
+	float b = 0.5 + 0.5 * snoise(0.0003 * v);
+	float c = 0.5 + 0.5 * snoise(0.001 * v);
+
+	return 0.65 * a + 0.3 * b + 0.05 * c;
 }
 
 
@@ -97,11 +138,10 @@ void main()
 	float scaledPlanetSeed = 10000.0 * planetSeed;
 	vec3 planetSeedVector = vec3(scaledPlanetSeed, scaledPlanetSeed, scaledPlanetSeed) + position;
 
-	float a = 0.5 + 0.5 * ridgedNoise(0.0001 * planetSeedVector);
-	float b = 0.5 + 0.5 * ridgedNoise(0.0003 * planetSeedVector);
-	float c = 0.5 + 0.5 * ridgedNoise(0.001 * planetSeedVector);
+	float lavaRivers = generateLavaRivers(planetSeedVector);
+	float planetHeight = generatePlanetHeight(planetSeedVector);
 
-	heightFactor = 0.65 * a + 0.3 * b + 0.05 * c;
+	heightFactor = planetHeight - 0.5 * lavaRivers;
 
 	gl_Position = projectionMatrix * modelViewMatrix * 
 		vec4(position + 500.0 * heightFactor * normal, 1.0);

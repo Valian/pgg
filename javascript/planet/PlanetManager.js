@@ -6,26 +6,19 @@ var PlanetManager = function() {
 	var shaderProvider = new ShaderProvider();
 	this.planetMaterials = {
 		terran: shaderProvider.getShaderMaterial('planet/terran'),
-		desert: shaderProvider.getShaderMaterial('planet/desert')
+		desert: shaderProvider.getShaderMaterial('planet/desert'),
+		lava: shaderProvider.getShaderMaterial('planet/lava'),
 	};
 
 	this.planets = [];
 
-	this.createPlanet = function(waterLevel) {
-		var planetShaderMaterial = this.planetMaterials.terran.clone();
+	this.createLavaPlanet = function() {
+		var planetShaderMaterial = this.planetMaterials.lava.clone();
 		planetShaderMaterial.uniforms = {
-			waterLevel: {
-				type: 'f',
-				value: waterLevel
-			},
 			planetSeed: {
 				type: 'f',
 				value: Math.random()
 			},
-			planetDetails: {
-				type: 'i',
-				value: PLANET_DETAILS.LOW
-			}
 		};
 		var planet = new Planet(this.planetGeometry, planetShaderMaterial);
 		this.planets.push(planet);

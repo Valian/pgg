@@ -88,31 +88,31 @@ varying float heightFactor;
 
 float generateLavaRivers(vec3 v)
 {
-	float riverFactor = 0.1;
-	float value = abs(snoise(0.0001 * v));
-	float sum = value;
+	float riverFactor = 0.95;
+	float value = 1.0 - abs(snoise(0.0001 * v));
 
-	if(value < riverFactor)
+	if(value > riverFactor)
 	{
-		return sum;
+		return value;
 	}
 	else
 	{
-		value = abs(snoise(0.0001 * v + vec3(100.0, 100.0, 100.0)));
+		float sum = value;
+		value = 1.0 - abs(snoise(0.0001 * v + vec3(100.0, 100.0, 100.0)));
 		sum += value;
 
-		if(value < riverFactor)
+		if(value > riverFactor)
 		{
-			return sum / 2.0;
+			return 0.5 * sum;
 		}
 		else
 		{
-			value = abs(snoise(0.0001 * v + vec3(300.0, -300.0, 300.0)));
+			value = 1.0 - abs(snoise(0.0001 * v + vec3(300.0, -300.0, 300.0)));
 			sum += value;
 
-			if(value < riverFactor)
+			if(value > riverFactor)
 			{
-				return sum / 3.0;
+				return 0.3333 * sum;
 			}
 			else
 			{
@@ -123,7 +123,7 @@ float generateLavaRivers(vec3 v)
 }
 
 
-float generatePlanetHeight(vec3 v)
+float generateSurfaceMask(vec3 v)
 {
 	float a = 0.5 + 0.5 * snoise(0.0001 * v);
 	float b = 0.5 + 0.5 * snoise(0.0003 * v);
@@ -133,24 +133,47 @@ float generatePlanetHeight(vec3 v)
 }
 
 
+float generateDesertSurface(vec3 v)
+{
+	float a = 0.5 + 0.5 * snoise(0.0001 * v);
+	float b = 0.5 + 0.5 * snoise(0.0003 * v);
+
+	return 0.325 * a + 0.165 * b;
+}
+
+
+float generateMountainsSurface(vec3 v)
+{
+	float a = 0.5 + 0.5 * snoise(0.0001 * v);
+	float b = 0.5 + 0.5 * snoise(0.0003 * v);
+	float c = 0.5 + 0.5 * snoise(0.001 * v);
+
+	return 0.55 * a + 0.3 * b + 0.15 * c;
+}
+
+
 void main()
 {
 	float scaledPlanetSeed = 10000.0 * planetSeed;
 	vec3 planetSeedVector = vec3(scaledPlanetSeed, scaledPlanetSeed, scaledPlanetSeed) + position;
 
-	float lavaRivers = generateLavaRivers(planetSeedVector);
-	float planetHeight = generatePlanetHeight(planetSeedVector);
-/*
-	if(lavaRivers != 0.0)
+	float surfaceMask = generateSurfaceMask(planetSeedVector);
+
+	if(surfaceMask < 0.55)
 	{
-		heightFactor = 0.0;
+		float desertSurface = generateDesertSurface(planetSeedVector);
+		heightFactor = desertSurface;
+	}
+	else if(surfaceMask < 0.65)
+	{
+		float desertSurface = generateDesertSurface(planetSeedVector);
+		float mountainsSurface = generateMountainsSurface(planetSeedVector);
+		heightFactor = mix(desertSurface, mountainsSurface, (surfaceMask - 0.55) / 0.1);
 	}
 	else
 	{
-		heightFactor = planetHeight - lavaRivers;
+		heightFactor = generateMountainsSurface(planetSeedVector);
 	}
-*/
-	heightFactor = planetHeight + lavaRivers;
 
 	gl_Position = projectionMatrix * modelViewMatrix * 
 		vec4(position + 500.0 * heightFactor * normal, 1.0);

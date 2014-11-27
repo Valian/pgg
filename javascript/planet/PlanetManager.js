@@ -5,15 +5,20 @@ var PlanetManager = function() {
 
 	var planetGeometry = new THREE.SphereGeometry(10000, 250, 250);
 	var resources = new Resources();
+
+	//do obliczania time uniform
 	var startTime = Date.now();
 
+	//slownik trzymajacy dane o dostepnych typach planet
 	var planetTypes = {
 		terran: {
 			shader : resources.getShaderMaterial('planet/terran'),
 			uniforms : {
 				i: { planetDetails: 1 },
+				f: { waterLevel: 0.5 }
 			},
 		},
+
 		desert: {
 			shader : resources.getShaderMaterial('planet/desert')
 		},
@@ -23,6 +28,7 @@ var PlanetManager = function() {
 				t: { surfaceTex: resources.getTexture('gradients/lava.png') },
 			},
 		},
+
 		ice: {
 			shader : resources.getShaderMaterial('planet/ice'),
 			uniforms : {
@@ -30,31 +36,41 @@ var PlanetManager = function() {
 				f : { surfaceHeight : 300, planetRadius : 10000 }
 			},
 		},
+
 		sun: {
 			shader : resources.getShaderMaterial('planet/sun'),
 			uniforms : {
 				t: { surfaceTex: resources.getTexture('gradients/lava.png') },
 				f : { surfaceHeight : 300, planetRadius : 10000 }
 			},
+
 			animatedUniforms : {
 				f : { time : function() { return Date.now() - startTime; } }
 			},
 		},
 	}
 
+  //metoda odswiezajaca uniformy oparte na funkcjach
 	var updateAnimatedUniforms = function(material, animatedUniforms) {
 		var type, key;
 
 		for(uniformType in animatedUniforms) {
 			for(key in animatedUniforms[uniformType]) {
-				material.uniforms[key] = {
-					type : uniformType,
-					value : animatedUniforms[uniformType][key]()
-				};
+
+				if(!material.uniforms[key]) {
+						material.uniforms[key] = {
+						type : uniformType
+					};
+				}
+
+				material.uniforms[key].value = animatedUniforms[uniformType][key]();
+				console.log(animatedUniforms[uniformType][key]());
 			}
 		}
 	}
 
+	//tworzy material na podstawie danych.
+	//kopiuje material zawierajacy shadery oraz zapelnia ich uniformy.
 	var createMaterial = function(data) {
 		var key, uniformType;
 		var planetShaderMaterial = data.shader.clone();
@@ -80,6 +96,8 @@ var PlanetManager = function() {
 		return planetShaderMaterial;
 	}
 
+	//tworzy planete wybranego typu.
+	//Dostepne typy sa zawarte w obiekcie planetTypes
 	this.createPlanet = function(name) {
 		var data = planetTypes[name];
 		var material = createMaterial(data);
@@ -91,10 +109,12 @@ var PlanetManager = function() {
 		return planet;
 	}
 
+	//odswieza planety
 	this.update = function() {
 		var name;
 
 		for(name in this.planets) {
+			console.log(name);
 			var planet = this.planets[name];
 			updateAnimatedUniforms(planet.mesh.material,
 				planet.animatedUniforms);

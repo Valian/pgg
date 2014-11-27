@@ -46,6 +46,7 @@ var PGG = function() {
 		function render() {
 			var delta = _this.clock.getDelta();
 			requestAnimationFrame( render );
+			_this.planetManager.update();
 			_this.controls.update( delta );
 			_this.renderer.render(_this.scene, _this.camera);
 			_this.stats.update();

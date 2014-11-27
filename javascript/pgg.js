@@ -15,7 +15,7 @@ var PGG = function() {
 	this.initScene = function() {
 		this.scene = new THREE.Scene();
 		this.planetManager = new PlanetManager();
-		var planet = this.planetManager.createPlanet('ice');
+		var planet = this.planetManager.createPlanet('sun');
 		planet.mesh.position.z = -10000;
 		this.scene.add(planet.mesh);
 	};

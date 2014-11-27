@@ -8,7 +8,8 @@ var PlanetManager = function() {
 
 	var planetTypes = {
 		terran: {
-			shader : resources.getShaderMaterial('planet/terran')
+			shader : resources.getShaderMaterial('planet/terran'),
+			intUniforms : { planetDetails : 1 }
 		},
 		desert: {
 			shader : resources.getShaderMaterial('planet/desert')
@@ -38,6 +39,13 @@ var PlanetManager = function() {
 			planetShaderMaterial.uniforms[key] = {
 				type : 'f',
 				value : data.floatUniforms[key]
+			};
+		}
+		
+		for(key in data.intUniforms) {
+			planetShaderMaterial.uniforms[key] = {
+				type : 'i',
+				value : data.intUniforms[key]
 			};
 		}
 

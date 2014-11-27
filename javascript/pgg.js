@@ -1,10 +1,8 @@
 
 
 var PGG = function() {
-	this.shaderProvider = new ShaderProvider();
-
 	this.initCameraAndControls = function() {
-		this.camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 1000000);
+		this.camera = new THREE.PerspectiveCamera(35, window.innerWidth/window.innerHeight, 0.1, 1000000);
 
 		this.controls = new THREE.FlyControls( this.camera );
 		this.controls.movementSpeed = 10000;
@@ -17,7 +15,7 @@ var PGG = function() {
 	this.initScene = function() {
 		this.scene = new THREE.Scene();
 		this.planetManager = new PlanetManager();
-		var planet = this.planetManager.createDesertPlanet();
+		var planet = this.planetManager.createPlanet('ice');
 		planet.mesh.position.z = -10000;
 		this.scene.add(planet.mesh);
 	};

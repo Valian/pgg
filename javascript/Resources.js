@@ -22,8 +22,7 @@ var StaticLoader = function() {
 	};
 };
 
-
-var ShaderProvider = function() {
+var Resources = function() {
 	this.staticLoader = new StaticLoader();
 
 	this.getShaderMaterial = function(name) {
@@ -32,5 +31,9 @@ var ShaderProvider = function() {
 			vertexShader: shaderCode.vertexShader,
 			fragmentShader: shaderCode.fragmentShader
 		});
+	};
+
+	this.getTexture = function(name) {
+		return THREE.ImageUtils.loadTexture('textures/' + name);
 	};
 };

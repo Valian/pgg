@@ -82,6 +82,9 @@ float snoise(vec3 v)
 }
 
 
+uniform float surfaceHeight;
+uniform float planetRadius;
+
 uniform float planetSeed;
 varying float heightFactor;
 
@@ -135,14 +138,17 @@ float generatePlanetHeight(vec3 v)
 
 void main()
 {
+	vec3 sphereNormal = normalize(position);
+  vec3 spherePos = sphereNormal * planetRadius;
+
 	float scaledPlanetSeed = 10000.0 * planetSeed;
-	vec3 planetSeedVector = vec3(scaledPlanetSeed, scaledPlanetSeed, scaledPlanetSeed) + position;
+	vec3 planetSeedVector = vec3(scaledPlanetSeed, scaledPlanetSeed, scaledPlanetSeed) + spherePos;
 
 	float lavaRivers = generateLavaRivers(planetSeedVector);
 	float planetHeight = generatePlanetHeight(planetSeedVector);
 
 	heightFactor = planetHeight - 0.5 * lavaRivers;
 
-	gl_Position = projectionMatrix * modelViewMatrix * 
-		vec4(position + 500.0 * heightFactor * normal, 1.0);
+	gl_Position = projectionMatrix * modelViewMatrix *
+		vec4(spherePos + surfaceHeight * heightFactor * sphereNormal, 1.0);
 }

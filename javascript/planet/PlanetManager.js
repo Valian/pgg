@@ -15,7 +15,7 @@ var PlanetManager = function() {
 			shader : resources.getShaderMaterial('planet/terran'),
 			uniforms : {
 				i: { planetDetails: 1 },
-				f: { waterLevel: 0.5 }
+				f: { waterLevel: 0.5, surfaceHeight : 300, planetRadius : 10000  }
 			},
 		},
 
@@ -26,6 +26,7 @@ var PlanetManager = function() {
 			shader : resources.getShaderMaterial('planet/lava'),
 			uniforms : {
 				t: { surfaceTex: resources.getTexture('gradients/lava.png') },
+				f : { surfaceHeight : 300, planetRadius : 10000 }
 			},
 		},
 
@@ -48,9 +49,16 @@ var PlanetManager = function() {
 				f : { time : function() { return Date.now() - startTime; } }
 			},
 		},
+
+		test : {
+			shader : resources.getShaderMaterial('planet/test', { wireframe: true }),
+			uniforms : {
+				f: { planetRadius : 10000 }
+			},
+		}
 	}
 
-  //metoda odswiezajaca uniformy oparte na funkcjach
+	//metoda odswiezajaca uniformy oparte na funkcjach
 	var updateAnimatedUniforms = function(material, animatedUniforms) {
 		var type, key;
 
@@ -101,7 +109,8 @@ var PlanetManager = function() {
 	this.createPlanet = function(name) {
 		var data = planetTypes[name];
 		var material = createMaterial(data);
-		var planet = new Planet(planetGeometry, material);
+		//var material = new THREE.MeshBasicMaterial({wireframe: true});
+		var planet = new Planet(material, 1);
 
 		planet.animatedUniforms = data.animatedUniforms;
 
@@ -110,14 +119,15 @@ var PlanetManager = function() {
 	}
 
 	//odswieza planety
-	this.update = function() {
+	this.update = function(userPosition) {
 		var name;
 
 		for(name in this.planets) {
-			console.log(name);
 			var planet = this.planets[name];
-			updateAnimatedUniforms(planet.mesh.material,
+			updateAnimatedUniforms(planet.object.material,
 				planet.animatedUniforms);
+
+			planet.update(userPosition);
 		}
 	}
 };

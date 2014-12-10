@@ -89,6 +89,8 @@ float snoise(vec3 v)
 
 uniform float waterLevel;
 uniform float planetSeed;
+uniform float surfaceHeight;
+uniform float planetRadius;
 uniform int planetDetails;
 
 varying float heightFactor;
@@ -96,8 +98,11 @@ varying float heightFactor;
 
 void main()
 {
+	vec3 sphereNormal = normalize(position);
+	vec3 spherePos = sphereNormal * planetRadius;
+
 	float scaledPlanetSeed = 10000.0 * planetSeed;
-	vec3 planetSeedVector = vec3(scaledPlanetSeed, scaledPlanetSeed, scaledPlanetSeed) + position;
+	vec3 planetSeedVector = vec3(scaledPlanetSeed, scaledPlanetSeed, scaledPlanetSeed) + spherePos;
 
 	if(planetDetails == PLANET_DETAILS_LOW)
 	{
@@ -116,12 +121,13 @@ void main()
 
 	}
 
+
 	if(heightFactor < waterLevel)
 	{
-		gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+		gl_Position = projectionMatrix * modelViewMatrix * vec4(spherePos, 1.0);
 	}
 	else
 	{
-		gl_Position = projectionMatrix * modelViewMatrix * vec4(position + 500.0 * (heightFactor - waterLevel) * normal, 1.0);
+		gl_Position = projectionMatrix * modelViewMatrix * vec4(spherePos + surfaceHeight * (heightFactor - waterLevel) * sphereNormal, 1.0);
 	}
 }

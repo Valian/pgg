@@ -15,9 +15,9 @@ var PGG = function() {
 	this.initScene = function() {
 		this.scene = new THREE.Scene();
 		this.planetManager = new PlanetManager();
-		var planet = this.planetManager.createPlanet('sun');
-		planet.mesh.position.z = -10000;
-		this.scene.add(planet.mesh);
+		var planet = this.planetManager.createPlanet('lava');
+		planet.object.position.z = -60000;
+		this.scene.add(planet.object);
 	};
 
 	this.initRenderer = function() {
@@ -46,7 +46,7 @@ var PGG = function() {
 		function render() {
 			var delta = _this.clock.getDelta();
 			requestAnimationFrame( render );
-			_this.planetManager.update();
+			_this.planetManager.update( _this.camera.position );
 			_this.controls.update( delta );
 			_this.renderer.render(_this.scene, _this.camera);
 			_this.stats.update();

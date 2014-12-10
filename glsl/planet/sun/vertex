@@ -114,6 +114,9 @@ void main()
   heightFactor = generateHeightFactor(planetSeedVector);
   heightFactor = flattenSurface(heightFactor);
 
+  vec3 sphereNormal = normalize(position);
+  vec3 spherePos = sphereNormal * planetRadius;
+
   gl_Position = projectionMatrix * modelViewMatrix *
-    vec4(position + surfaceHeight * heightFactor * normal, 1.0);
+    vec4(spherePos + surfaceHeight * heightFactor * sphereNormal, 1.0);
 }

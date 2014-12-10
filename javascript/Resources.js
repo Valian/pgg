@@ -25,12 +25,14 @@ var StaticLoader = function() {
 var Resources = function() {
 	this.staticLoader = new StaticLoader();
 
-	this.getShaderMaterial = function(name) {
+	this.getShaderMaterial = function(name, data) {
 		var shaderCode = this.staticLoader.loadShader(name);
-		return new THREE.ShaderMaterial({
-			vertexShader: shaderCode.vertexShader,
-			fragmentShader: shaderCode.fragmentShader
-		});
+
+		data = data || {};
+		data.vertexShader = shaderCode.vertexShader;
+		data.fragmentShader = shaderCode.fragmentShader;
+
+		return new THREE.ShaderMaterial(data);
 	};
 
 	this.getTexture = function(name) {

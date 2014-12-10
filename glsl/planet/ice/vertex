@@ -107,12 +107,14 @@ float flattenSurface(float value)
 
 void main()
 {
+  vec3 sphereNormal = normalize(position);
+  vec3 spherePos = sphereNormal * planetRadius;
 
-  vec3 planetSeedVector = vec3(planetSeed, planetSeed, planetSeed) + position / planetRadius;
+  vec3 planetSeedVector = vec3(planetSeed, planetSeed, planetSeed) + spherePos / planetRadius;
 
   heightFactor = generateHeightFactor(planetSeedVector);
   heightFactor = flattenSurface(heightFactor);
 
   gl_Position = projectionMatrix * modelViewMatrix *
-    vec4(position + surfaceHeight * heightFactor * normal, 1.0);
+    vec4(spherePos + surfaceHeight * heightFactor * sphereNormal, 1.0);
 }

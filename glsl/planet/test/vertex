@@ -1,0 +1,10 @@
+uniform float surfaceHeight;
+uniform float planetRadius;
+
+void main()
+{
+  vec3 sphereNormal = normalize(position);
+  vec3 spherePos = sphereNormal * planetRadius;
+
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(spherePos, 1.0);
+}

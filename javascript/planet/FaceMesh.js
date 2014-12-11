@@ -1,4 +1,5 @@
 function FaceMesh(size, segments, material, position, rotation) {
+
   var geometry = new THREE.PlaneBufferGeometry(size, size, segments, segments);
 
   rotateGeometry(geometry, rotation);
@@ -9,15 +10,18 @@ function FaceMesh(size, segments, material, position, rotation) {
   this.frustumCulled = false;
 
   function moveGeometry(geometry, translateVector) {
+
     var positionAttr = geometry.attributes.position;
     var array = positionAttr.array;
 
     for(var i = 0; i < array.length; i++) {
       array[i] += translateVector.getComponent(i % 3);
     }
+
   }
 
   function rotateGeometry(geometry, rotationVector) {
+
     var positionAttr = geometry.attributes.position;
     var array = positionAttr.array;
     var vec = new THREE.Vector3();
@@ -32,10 +36,12 @@ function FaceMesh(size, segments, material, position, rotation) {
       array[3*i + 1] = vec.y;
       array[3*i + 2] = vec.z;
     }
+
   }
 }
 
 FaceMesh.prototype = Object.create( THREE.Mesh.prototype );
+
 FaceMesh.prototype.dispose = function () {
   this.geometry.dispose();
   this.geometry = undefined;

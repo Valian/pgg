@@ -15,9 +15,10 @@ var PGG = function() {
 	this.initScene = function() {
 		this.scene = new THREE.Scene();
 		this.planetManager = new PlanetManager();
-		var planet = this.planetManager.createPlanet('lava');
-		planet.object.position.z = -60000;
-		this.scene.add(planet.object);
+		this.scene.add(this.planetManager.container);
+
+		var planet = this.planetManager.createPlanet('test');
+		planet.position.z = -60000;
 	};
 
 	this.initRenderer = function() {
@@ -30,7 +31,7 @@ var PGG = function() {
 	this.initOthers = function() {
 		this.clock = new THREE.Clock();
 
-		this.stats = new Stats();
+		this.stats = new THREEx.RendererStats();
 		this.stats.domElement.style.position = 'absolute';
 		this.stats.domElement.style.top = '0px';
 		document.body.appendChild(this.stats.domElement);
@@ -46,10 +47,10 @@ var PGG = function() {
 		function render() {
 			var delta = _this.clock.getDelta();
 			requestAnimationFrame( render );
-			_this.planetManager.update( _this.camera.position );
+			_this.planetManager.update( _this.camera );
 			_this.controls.update( delta );
 			_this.renderer.render(_this.scene, _this.camera);
-			_this.stats.update();
+			_this.stats.update(_this.renderer);
 		}
 		render();
 	};

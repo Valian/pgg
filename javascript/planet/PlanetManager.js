@@ -1,133 +1,113 @@
+function PlanetManager() {
 
+	this.container = new THREE.Object3D();
 
-var PlanetManager = function() {
 	this.planets = [];
 
-	var planetGeometry = new THREE.SphereGeometry(10000, 250, 250);
-	var resources = new Resources();
+	this.defaultPlanetRadius = 10000;
+	this.defaultSurfaceHeight = 300;
 
-	//do obliczania time uniform
-	var startTime = Date.now();
+	var resources = new Resources();
 
 	//slownik trzymajacy dane o dostepnych typach planet
 	var planetTypes = {
 		terran: {
-			shader : resources.getShaderMaterial('planet/terran'),
-			uniforms : {
-				i: { planetDetails: 1 },
-				f: { waterLevel: 0.5, surfaceHeight : 300, planetRadius : 10000  }
+			material : resources.getPlanetMaterial('planet/terran'),
+			defines : {
+				planetDetails: 1,
+				waterLevel: 0.5
 			},
 		},
-
 		desert: {
-			shader : resources.getShaderMaterial('planet/desert')
+			material : resources.getPlanetMaterial('planet/desert')
 		},
 		lava: {
-			shader : resources.getShaderMaterial('planet/lava'),
+			material : resources.getPlanetMaterial('planet/lava'),
 			uniforms : {
 				t: { surfaceTex: resources.getTexture('gradients/lava.png') },
-				f : { surfaceHeight : 300, planetRadius : 10000 }
 			},
 		},
-
 		ice: {
-			shader : resources.getShaderMaterial('planet/ice'),
+			material : resources.getPlanetMaterial('planet/ice'),
 			uniforms : {
 				t: { surfaceTex: resources.getTexture('gradients/ice.png') },
-				f : { surfaceHeight : 300, planetRadius : 10000 }
 			},
 		},
-
 		sun: {
-			shader : resources.getShaderMaterial('planet/sun'),
+			material : resources.getPlanetMaterial('planet/sun', { updateTime: true }),
 			uniforms : {
 				t: { surfaceTex: resources.getTexture('gradients/lava.png') },
-				f : { surfaceHeight : 300, planetRadius : 10000 }
-			},
-
-			animatedUniforms : {
-				f : { time : function() { return Date.now() - startTime; } }
 			},
 		},
-
 		test : {
-			shader : resources.getShaderMaterial('planet/test', { wireframe: true }),
-			uniforms : {
-				f: { planetRadius : 10000 }
-			},
-		}
-	}
-
-	//metoda odswiezajaca uniformy oparte na funkcjach
-	var updateAnimatedUniforms = function(material, animatedUniforms) {
-		var type, key;
-
-		for(uniformType in animatedUniforms) {
-			for(key in animatedUniforms[uniformType]) {
-
-				if(!material.uniforms[key]) {
-						material.uniforms[key] = {
-						type : uniformType
-					};
-				}
-
-				material.uniforms[key].value = animatedUniforms[uniformType][key]();
-				console.log(animatedUniforms[uniformType][key]());
-			}
+			material : resources.getPlanetMaterial('planet/test', { wireframe: true }),
 		}
 	}
 
 	//tworzy material na podstawie danych.
 	//kopiuje material zawierajacy shadery oraz zapelnia ich uniformy.
-	var createMaterial = function(data) {
+	var createMaterial = function(data, planetRadius, surfaceHeight) {
+
 		var key, uniformType;
-		var planetShaderMaterial = data.shader.clone();
+		var planetShaderMaterial = data.material.clone();
 
-		planetShaderMaterial.uniforms = {
-			planetSeed: {
-				type: 'f',
-				value: Math.random()
-			}
-		};
+		for(uniformType in data.uniforms)
+			for(key in data.uniforms[uniformType])
+				planetShaderMaterial.setUniform(key, data.uniforms[uniformType][key], uniformType);
 
-		for(uniformType in data.uniforms) {
-			for(key in data.uniforms[uniformType]) {
-				planetShaderMaterial.uniforms[key] = {
-					type : uniformType,
-					value : data.uniforms[uniformType][key]
-				};
-			}
-		}
+		for(key in data.defines)
+			planetShaderMaterial.defines[key] = data.defines[key];
 
-		updateAnimatedUniforms(planetShaderMaterial, data.animatedUniforms);
+		planetShaderMaterial.defines['SEED'] = Math.random().toFixed(4);//Math.floor(Math.random() * 2000000000);
+		planetShaderMaterial.defines['RADIUS'] = planetRadius.toFixed(1);
+		planetShaderMaterial.defines['SURFACE'] = surfaceHeight.toFixed(1);
 
 		return planetShaderMaterial;
+
 	}
 
 	//tworzy planete wybranego typu.
 	//Dostepne typy sa zawarte w obiekcie planetTypes
-	this.createPlanet = function(name) {
-		var data = planetTypes[name];
-		var material = createMaterial(data);
-		//var material = new THREE.MeshBasicMaterial({wireframe: true});
-		var planet = new Planet(material, 1);
+	this.createPlanet = function(name, planetRadius, surfaceHeight) {
 
-		planet.animatedUniforms = data.animatedUniforms;
+		var material, planet;
+
+		planetRadius = planetRadius || this.defaultPlanetRadius;
+		surfaceHeight = surfaceHeight || this.defaultSurfaceHeight;
+		material = createMaterial(planetTypes[name], planetRadius, surfaceHeight);
+		//material = new THREE.MeshBasicMaterial({ wireframe : true });
+		planet = new Planet(material, planetRadius, surfaceHeight);
 
 		this.planets.push(planet);
+		this.container.add(planet);
+
 		return planet;
+
+	}
+
+	function calculateCameraFrustum(camera) {
+
+		var matrix = new THREE.Matrix4();
+		var frustum = new THREE.Frustum();
+
+		matrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
+
+		return frustum.setFromMatrix(matrix);
+
 	}
 
 	//odswieza planety
-	this.update = function(userPosition) {
-		var name;
+	this.update = function(camera) {
 
-		for(name in this.planets) {
+		camera.frustum = calculateCameraFrustum(camera);
+
+		for(var name in this.planets) {
+
 			var planet = this.planets[name];
-			updateAnimatedUniforms(planet.object.material,
-				planet.animatedUniforms);
+			planet.update(camera);
 
-			planet.update(userPosition);
 		}
+
 	}
+
 };

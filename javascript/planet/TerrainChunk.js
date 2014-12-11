@@ -1,4 +1,4 @@
-var TerrainChunk = function(size, segments, material, position, rotation) {
+ function TerrainChunk (size, segments, material, position, rotation, radius) {
 
   this.parameters = {
     size : size,
@@ -8,12 +8,20 @@ var TerrainChunk = function(size, segments, material, position, rotation) {
     rotation : rotation
   }
 
-  this.chunks = [ ];
   this.mesh = new FaceMesh(size, segments, material, position, rotation);
+
+  this.chunks = [];
+
+  this.visibleByCamera = true;
+
+  this.normal = position.clone().normalize();
+
+  this.isDivided = false;
 
 
   this.split = function() {
-    if(this.isDivided()) return;
+
+    if(this.isDivided) return;
 
     var vert = this.mesh.geometry.attributes.position.array;
     var vLen = vert.length;
@@ -34,10 +42,13 @@ var TerrainChunk = function(size, segments, material, position, rotation) {
     }
 
     this.mesh.visible = false;
+    this.isDivided = true;
+
   }
 
   this.merge = function() {
-    if(!this.isDivided()) return;
+
+    if(!this.isDivided) return;
 
     for (var key in this.chunks) {
       var chunk = this.chunks[key];
@@ -48,32 +59,68 @@ var TerrainChunk = function(size, segments, material, position, rotation) {
 
     this.chunks = [];
     this.mesh.visible = true;
+    this.isDivided = false;
+
   }
 
-  this.isDivided = function() {
-    return this.chunks.length > 0;
+  this.refreshVisibility = function() {
+
+    this.mesh.visible = this.visibleByCamera && !this.isDivided;
+
   }
 
+  this.update = function(camera, maxDetailLevel, actualLevel) {
 
-  this.update = function(userPosition, maxDetailLevel, actualLevel) {
-    var chunkPosition = this.mesh.parent.position.clone().add(this.parameters.position);
-    var dist = userPosition.distanceTo(chunkPosition);
+    var planet = this.mesh.parent;
+    var chunkPosition = planet.position.clone().add(this.parameters.position);
+    var spherePosition = planet.position.clone().add(this.normal.clone().multiplyScalar(planet.planetRadius));
+    var dist = camera.position.distanceTo(spherePosition);
     var desiredLevel = (maxDetailLevel * this.parameters.size - dist) / this.parameters.size;
+
     actualLevel = actualLevel || 0;
 
-    if(desiredLevel > actualLevel && maxDetailLevel > actualLevel && !this.isDivided()) {
-      console.log('dist: ' + dist + ' size ' + this.parameters.size + "   splitting!");
-      this.split();
+    //backface culling
+    this.visibleByCamera = isFrontSideVisible(chunkPosition, this.normal, camera, actualLevel);
+    //frustum culling
+    this.visibleByCamera = this.visibleByCamera && isInCameraFrustum(camera, spherePosition, this.parameters.size);
 
+    if( desiredLevel > actualLevel && maxDetailLevel > actualLevel && this.visibleByCamera) {
+      this.split();
     }
 
-    if(desiredLevel < actualLevel && this.isDivided()) {
-      console.log('dist: ' + dist + ' size ' + this.parameters.size + "   merging!!");
+    if(desiredLevel <= actualLevel - 0.5) {
       this.merge();
     }
 
     for(var i in this.chunks) {
-      this.chunks[i].update(userPosition, maxDetailLevel, actualLevel + 1);
+      this.chunks[i].update(camera, maxDetailLevel, actualLevel + 1);
     }
+
+
+    this.refreshVisibility();
+
+  }
+
+
+  function isFrontSideVisible(position, normal, camera, actualLevel) {
+
+    var dir = camera.position.clone().sub(position).normalize();
+    var dot = normal.dot(dir);
+
+    var tolerance = 0.615 / Math.pow(2, actualLevel);
+
+    var angle1 = Math.acos(dot) + tolerance;
+    var angle2 = Math.acos(dot) - tolerance;
+
+    return  angle1 < Math.PI / 2 || angle2 < Math.PI / 2;
+
+  }
+
+  function isInCameraFrustum(camera, spherePosition, chunkSize) {
+
+    var frustumSphereRadius = chunkSize * (1 + Math.sqrt(2));
+    var inCameraFrustum = camera.frustum.intersectsSphere(new THREE.Sphere(spherePosition, frustumSphereRadius))
+    return inCameraFrustum;
+
   }
 }

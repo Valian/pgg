@@ -1,57 +1,77 @@
-
-
 var PGG = function() {
-	this.initCameraAndControls = function() {
-		this.camera = new THREE.PerspectiveCamera(35, window.innerWidth/window.innerHeight, 0.1, 1000000);
 
-		this.controls = new THREE.FlyControls( this.camera );
-		this.controls.movementSpeed = 10000;
-		this.controls.domElement = document;
-		this.controls.rollSpeed = Math.PI / 24;
-		this.controls.autoForward = false;
-		this.controls.dragToLook = false;
-	};
+    this.initCameraAndControls = function() {
 
-	this.initScene = function() {
-		this.scene = new THREE.Scene();
-		this.planetManager = new PlanetManager();
-		this.scene.add(this.planetManager.container);
+        this.camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000000);
 
-		var planet = this.planetManager.createPlanet('test');
-		planet.position.z = -60000;
-	};
+        this.controls = new THREE.FlyControls(this.camera);
+        this.controls.movementSpeed = 10000;
+        this.controls.domElement = document;
+        this.controls.rollSpeed = Math.PI / 24;
+        this.controls.autoForward = false;
+        this.controls.dragToLook = false;
 
-	this.initRenderer = function() {
-		this.renderer = new THREE.WebGLRenderer({antialias: false});
-		this.renderer.sortObjects = false;
-		this.renderer.setSize(window.innerWidth, window.innerHeight);
-		document.body.appendChild(this.renderer.domElement);
-	};
+    };
 
-	this.initOthers = function() {
-		this.clock = new THREE.Clock();
+    this.initScene = function() {
 
-		this.stats = new THREEx.RendererStats();
-		this.stats.domElement.style.position = 'absolute';
-		this.stats.domElement.style.top = '0px';
-		document.body.appendChild(this.stats.domElement);
-	};
+        this.scene = new THREE.Scene();
+        this.planetManager = new PlanetManager();
+        this.scene.add(this.planetManager.container);
 
-	this.run = function() {
-		this.initCameraAndControls();
-		this.initScene();
-		this.initRenderer();
-		this.initOthers();
+        var planet = this.planetManager.createPlanet('test');
+        planet.position.z = -60000;
 
-		var _this = this;
-		function render() {
-			var delta = _this.clock.getDelta();
-			requestAnimationFrame( render );
-			_this.planetManager.update( _this.camera );
-			_this.controls.update( delta );
-			_this.renderer.render(_this.scene, _this.camera);
-			_this.stats.update(_this.renderer);
-		}
-		render();
-	};
+    };
+
+    this.initRenderer = function() {
+
+        this.renderer = new THREE.WebGLRenderer({
+            antialias: false
+        });
+        this.renderer.sortObjects = false;
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(this.renderer.domElement);
+
+    };
+
+    this.initOthers = function() {
+
+        this.clock = new THREE.Clock();
+
+        this.stats = new Stats();
+        this.stats.domElement.style.position = 'absolute';
+        this.stats.domElement.style.top = '0px';
+        document.body.appendChild(this.stats.domElement);
+
+        this.rendererStats = new THREEx.RendererStats();
+        this.rendererStats.domElement.style.position = 'absolute';
+        this.rendererStats.domElement.style.bottom = '0px';
+        document.body.appendChild(this.rendererStats.domElement);
+
+    };
+
+    this.run = function() {
+
+        this.initCameraAndControls();
+        this.initScene();
+        this.initRenderer();
+        this.initOthers();
+
+        var _this = this;
+
+        function render() {
+            var delta = _this.clock.getDelta();
+            requestAnimationFrame(render);
+            _this.planetManager.update(_this.camera);
+            _this.controls.update(delta);
+            _this.renderer.render(_this.scene, _this.camera);
+            _this.stats.update();
+            _this.rendererStats.update(_this.renderer)
+        }
+
+        render();
+
+    };
+
 };

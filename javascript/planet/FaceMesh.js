@@ -1,52 +1,108 @@
-function FaceMesh(size, segments, material, position, rotation) {
+function FaceMesh(size, segments, material, position, rotation, planetRadius) {
 
-  var geometry = new THREE.PlaneBufferGeometry(size, size, segments, segments);
+    var geometry = new THREE.PlaneBufferGeometry(size, size, segments, segments);
 
-  rotateGeometry(geometry, rotation);
-  moveGeometry(geometry, position);
+    rotateGeometry(geometry, rotation);
+    moveGeometry(geometry, position);
+    computeGeometryBoundingBox(geometry, planetRadius);
 
-  THREE.Mesh.call(this, geometry, material);
+    THREE.Mesh.call(this, geometry, material);
 
-  this.frustumCulled = false;
+    this.boudingBox = null;
 
-  function moveGeometry(geometry, translateVector) {
+    this.frustumCulled = false;
 
-    var positionAttr = geometry.attributes.position;
-    var array = positionAttr.array;
+    function moveGeometry(geometry, translateVector) {
 
-    for(var i = 0; i < array.length; i++) {
-      array[i] += translateVector.getComponent(i % 3);
+        var positionAttr = geometry.attributes.position;
+        var array = positionAttr.array;
+
+        for (var i = 0; i < array.length; i++) {
+
+            array[i] += translateVector.getComponent(i % 3);
+
+        }
+
     }
 
-  }
+    function rotateGeometry(geometry, rotationVector) {
 
-  function rotateGeometry(geometry, rotationVector) {
+        var positionAttr = geometry.attributes.position;
+        var array = positionAttr.array;
+        var vec = new THREE.Vector3();
+        var quaternion = new THREE.Quaternion();
+        quaternion.setFromEuler(rotationVector);
 
-    var positionAttr = geometry.attributes.position;
-    var array = positionAttr.array;
-    var vec = new THREE.Vector3();
-    var quaternion = new THREE.Quaternion();
-    quaternion.setFromEuler(rotationVector);
+        for (var i = 0; i < array.length / 3; i++) {
 
-    for(var i = 0; i < array.length / 3; i++) {
-      vec.set(array[3*i], array[3*i+1], array[3*i+2]);
-      vec.applyQuaternion(quaternion);
+            vec.set(array[3 * i], array[3 * i + 1], array[3 * i + 2]);
+            vec.applyQuaternion(quaternion);
 
-      array[3*i] = vec.x;
-      array[3*i + 1] = vec.y;
-      array[3*i + 2] = vec.z;
+            array[3 * i] = vec.x;
+            array[3 * i + 1] = vec.y;
+            array[3 * i + 2] = vec.z;
+
+        }
+
     }
 
-  }
+    function computeGeometryBoundingBox(geometry, planetRadius) {
+
+        var positions = geometry.attributes.position.array;
+        var vector = new THREE.Vector3();
+
+        geometry.boundingBox = new THREE.Box3();
+
+        if (positions) {
+
+            for (var i = 0, il = positions.length; i < il; i += 3) {
+
+                vector.set(positions[i], positions[i + 1], positions[i + 2]);
+                vector.normalize().multiplyScalar(planetRadius);
+                geometry.boundingBox.expandByPoint(vector);
+
+            }
+
+        }
+
+    }
+
 }
 
-FaceMesh.prototype = Object.create( THREE.Mesh.prototype );
+FaceMesh.prototype = Object.create(THREE.Mesh.prototype);
 
-FaceMesh.prototype.dispose = function () {
-  this.geometry.dispose();
-  this.geometry = undefined;
+FaceMesh.prototype.dispose = function() {
 
-  if(this.parent) {
-    this.parent.remove(this);
-  }
+    this.geometry.dispose();
+    this.geometry = undefined;
+
+    if (this.parent) {
+
+        this.parent.remove(this);
+
+    }
+
+}
+
+FaceMesh.prototype.computeBoundingBox = function() {
+
+    if (!this.boundingBox) {
+
+        this.boundingBox = this.geometry.boundingBox.clone();
+
+    } else {
+
+        this.boundingBox.copy(this.geometry.boundingBox);
+
+    }
+
+    if (this.parent) {
+
+        var min = this.boundingBox.min.clone().add(this.parent.position);
+        var max = this.boundingBox.max.clone().add(this.parent.position);
+
+        this.boundingBox.set(min, max);
+
+    }
+
 }

@@ -49,8 +49,13 @@ function PlanetManager() {
         },
         test: {
             material: resources.getPlanetMaterial('planet/test', {
-                wireframe: true
+                wireframe: false
             }),
+            uniforms: {
+                t: {
+                    testTex: resources.getTexture('test.png')
+                },
+            },
         }
     }
 

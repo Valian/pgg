@@ -6,7 +6,7 @@ function Planet(material, planetRadius, surfaceHeight) {
     this.surfaceHeight = surfaceHeight;
 
     this.material = material;
-    this.maxDetailLevel = 5;
+    this.maxDetailLevel = 8;
     this.segments = 10;
 
     this.frustumCulled = false;
@@ -24,7 +24,7 @@ function Planet(material, planetRadius, surfaceHeight) {
 
         var size = (planet.planetRadius + planet.surfaceHeight / 2) * (2 / Math.sqrt(3));
         var chunk = new TerrainChunk(size, planet.segments, material,
-            position.multiplyScalar(size / 2), rotation, planet);
+            position.multiplyScalar(size / 2), rotation, -1, planet);
 
         planet.add(chunk.mesh);
         return chunk;

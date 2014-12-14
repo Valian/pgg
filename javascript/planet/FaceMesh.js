@@ -1,10 +1,16 @@
-function FaceMesh(size, segments, material, position, rotation, planetRadius) {
+function FaceMesh(size, segments, material, position, rotation, number, planetRadius) {
 
     var geometry = new THREE.PlaneBufferGeometry(size, size, segments, segments);
 
     rotateGeometry(geometry, rotation);
     moveGeometry(geometry, position);
     computeGeometryBoundingBox(geometry, planetRadius);
+
+    if(number >= 0) {
+
+        modifyUV(geometry, number, size);
+
+    }
 
     THREE.Mesh.call(this, geometry, material);
 
@@ -62,6 +68,21 @@ function FaceMesh(size, segments, material, position, rotation, planetRadius) {
                 geometry.boundingBox.expandByPoint(vector);
 
             }
+
+        }
+
+    }
+
+    function modifyUV(geometry, number, size) {
+
+        var uvs = geometry.attributes.uv.array;
+        var startingPosition = new THREE.Vector2( number % 2, 1 - Math.floor(number / 2));
+        startingPosition.multiplyScalar(0.5);
+
+        for (var i = 0, il = uvs.length; i < il; i += 2) {
+
+            uvs[i] = uvs[i] * 0.5 + startingPosition.x;
+            uvs[i + 1] = uvs[i + 1] * 0.5 + startingPosition.y;
 
         }
 

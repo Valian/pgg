@@ -1,14 +1,15 @@
- function TerrainChunk(size, segments, material, position, rotation, planet) {
+ function TerrainChunk(size, segments, material, position, rotation, number, planet) {
 
      this.parameters = {
          size: size,
          segments: segments,
          material: material,
          position: position,
-         rotation: rotation
+         rotation: rotation,
+         number : number
      }
 
-     this.mesh = new FaceMesh(size, segments, material, position, rotation, planet.planetRadius);
+     this.mesh = new FaceMesh(size, segments, material, position, rotation, number, planet.planetRadius);
 
      this.planet = planet;
 
@@ -37,7 +38,7 @@
 
          for (var key in corners) {
              var newCenter = corners[key].sub(position).divideScalar(2).add(position);
-             var chunk = new TerrainChunk(size / 2, segments, material, newCenter, rotation, this.planet);
+             var chunk = new TerrainChunk(size / 2, segments, material, newCenter, rotation, key, this.planet);
 
              this.chunks.push(chunk);
              this.mesh.parent.add(chunk.mesh);

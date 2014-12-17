@@ -20,6 +20,15 @@ var StaticLoader = function() {
 			fragmentShader: this.ajaxGet(shaderDir + '/fragment'),
 		}
 	};
+
+	this.getShaderMaterial = function(name) {
+		var shaderCode = this.loadShader(name);
+		var shaderMaterial = new THREE.ShaderMaterial({
+			vertexShader: shaderCode.vertexShader,
+			fragmentShader: shaderCode.fragmentShader,
+		});
+		return shaderMaterial;
+	};
 };
 
 var Resources = function() {

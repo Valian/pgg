@@ -14,6 +14,13 @@ function HeightmapShaderFactory() {
 };
 
 
+var HEIGHTMAP_MODE = {
+	XY: 0,
+	XZ: 1,
+	YZ: 2,
+};
+
+
 function HeightmapShader(shaderMaterial) {
 	this.shaderMaterial = shaderMaterial;
 
@@ -26,6 +33,7 @@ function HeightmapShader(shaderMaterial) {
 			noiseFrequency: {type: 'f', value: this.noiseFrequency},
 			startingPoint: {type: '3fv', value: this.startingPoint},
 			interpolationVector: {type: '3fv', value: this.interpolationVector},
+			mode: {type: 'i', value: HEIGHTMAP_MODE.XY},
 		}
 		return this.shaderMaterial;
 	};

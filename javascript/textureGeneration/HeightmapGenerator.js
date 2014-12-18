@@ -56,10 +56,3 @@ function HeightmapGenerator(renderer) {
 		return renderTarget;
 	};
 };
-
-/*
-		this.camera = new THREE.OrthographicCamera(0, 1, 0, 1, 1, 1000);
-		this.camera.position.set(0, 0, 1);
-		this.camera.lookAt(this.scene.position);
-		this.scene.add(this.camera); 
-*/

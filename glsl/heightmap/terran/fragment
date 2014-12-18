@@ -82,6 +82,11 @@ float snoise(vec3 v)
 }
 
 
+#define XY_MODE 0
+#define XZ_MODE 1
+#define YZ_MODE 2
+
+
 varying vec3 varyingPosition;
 
 

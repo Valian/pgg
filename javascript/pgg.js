@@ -18,33 +18,18 @@ var PGG = function() {
 
 		var squareGeometry = new THREE.PlaneBufferGeometry(1000, 1000, 100, 100);
 
-		var heightmapShaderFactory = new HeightmapShaderFactory();
-		var heightmapShader = heightmapShaderFactory.createHeightmapShader('terran');
-		heightmapShader.displacementVector = [100 * Math.random(), 100 * Math.random(), 100 * Math.random()];
-		heightmapShader.noiseFrequency = 1000;
-
 		var heightmapGenerator = new HeightmapGenerator(this.renderer);
 		var generatedTexture = heightmapGenerator.generateTexture(1000, 1000, 100, [0, 0, 0], [1, 1, 0], [0, 0, 0]);
 
-		var staticLoader = new StaticLoader();
-		var material = staticLoader.getShaderMaterial('simple/texture');
-		material.uniforms = {
-			texture: {type: 't', value: generatedTexture},
-		}
+		var material = ShaderUtils.loadMaterial('simple/texture');
+		material.uniforms = {texture: {type: 't', value: generatedTexture}}
 
-		var triangleMesh = new THREE.Mesh(squareGeometry, material);//heightmapShader.getShaderMaterial());
-		this.scene.add(triangleMesh);
-
-		/*
-		this.scene.add(this.planetManager.container);
-
-		var planet = this.planetManager.createPlanet('test');
-		planet.position.z = -60000;
-		*/
+		var mesh = new THREE.Mesh(squareGeometry, material);
+		this.scene.add(mesh);
 	};
 
 	this.initRenderer = function() {
-		this.renderer = new THREE.WebGLRenderer({antialias: false});
+		this.renderer = new THREE.WebGLRenderer();
 		this.renderer.sortObjects = false;
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 		document.body.appendChild(this.renderer.domElement);
@@ -65,13 +50,13 @@ var PGG = function() {
 		this.initScene();
 		this.initOthers();
 
-		var _this = this;
+		var that = this;
 		function render() {
-			var delta = _this.clock.getDelta();
-			requestAnimationFrame( render );
-			_this.controls.update( delta );
-			_this.renderer.render(_this.scene, _this.camera);
-			_this.stats.update(_this.renderer);
+			var delta = that.clock.getDelta();
+			requestAnimationFrame(render);
+			that.controls.update(delta);
+			that.renderer.render(that.scene, that.camera);
+			that.stats.update(that.renderer);
 		}
 		render();
 	};

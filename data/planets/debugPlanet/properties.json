@@ -1,0 +1,6 @@
+{
+    "genFragShaderPath": "gen.frag",
+    "rendFragShaderPath": "rend.frag",
+    "chunkSegments": 30,
+    "planetSurfaceMax": 2000
+}

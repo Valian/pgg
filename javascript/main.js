@@ -1,4 +1,15 @@
+require( ['detector', 'app', 'container'], function ( Detector, app, container ) {
 
+    if ( ! Detector.webgl ) {
 
-var pgg = new PGG();
-pgg.run();
+        Detector.addGetWebGLMessage();
+
+    }
+    else {
+
+        app.run();
+        container.innerHTML = "";
+
+    }
+
+} );

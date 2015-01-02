@@ -1,9 +1,0 @@
-
-
-varying float heightFactor;
-
-
-void main()
-{
-	gl_FragColor = vec4(mix(vec3(0.756, 0.603, 0.419), vec3(0.423, 0.329, 0.117), heightFactor), 1.0);
-}

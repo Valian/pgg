@@ -1,0 +1,16 @@
+{
+    "genFragShaderPath": "gen.frag",
+    "rendFragShaderPath": "rend.frag",
+
+    "chunkSegments": 30,
+    "lodMaxDetailLevel": 3,
+
+    "planetRadiusMin": 10000,
+    "planetRadiusMax": 12000,
+    "planetSurfaceMin": 300,
+    "planetSurfaceMax": 2000,
+
+    "this.noiseFrequency": 1,
+
+    "uniforms": { }
+}

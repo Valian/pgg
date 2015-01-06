@@ -2,7 +2,7 @@ define(["three"], function(THREE){
 
     FaceMesh.prototype = Object.create(THREE.Mesh.prototype);
 
-    FaceMesh.prototype.dispose = dispose;
+    FaceMesh.prototype.disposeMesh = disposeMesh;
 
     FaceMesh.prototype.computeBoundingBox = computeBoundingBox;
 
@@ -110,16 +110,18 @@ define(["three"], function(THREE){
 
     }
 
-    function dispose() {
-
-        this.geometry.dispose();
-        this.geometry = undefined;
+    function disposeMesh() {
 
         if (this.parent) {
 
             this.parent.remove(this);
 
         }
+
+
+        this.geometry.dispose();
+        this.material.uniforms.heightmapTex.value.dispose();
+        this.material.dispose();
 
     }
 

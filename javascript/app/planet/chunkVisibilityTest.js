@@ -10,7 +10,7 @@ define(["camera"], function(camera) {
     function visibilityTest(chunk, actualLevel) {
 
         var frontSideVisible = isFrontSideVisible(chunk, actualLevel);
-        var inCameraFrustum = isInCameraFrustum(chunk);
+        var inCameraFrustum = frontSideVisible && isInCameraFrustum(chunk);
         return frontSideVisible && inCameraFrustum;
 
     }

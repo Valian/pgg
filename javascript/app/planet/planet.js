@@ -40,11 +40,10 @@ define(["three", "planet/terrainChunk"], function(THREE, terrainChunk) {
 
         function createChunk(planet, position, rotation) {
 
-            var size = (planet.planetRadius + planet.surfaceHeight / 2) * (2 / Math.sqrt(3));
+            var size = (planet.planetRadius + planet.surfaceHeight / 2)
+                        * (2 / Math.sqrt(3));
             var chunk = terrainChunk.create(planet, size,
                 position.multiplyScalar(size / 2), rotation, -1);
-
-            planet.add(chunk.mesh);
 
             return chunk;
 

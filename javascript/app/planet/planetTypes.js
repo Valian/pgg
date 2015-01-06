@@ -1,7 +1,8 @@
 define(["planet/planetProperties", "resources", "config"],
        function(properties, resources, config){
 
-    var planetPaths = resources.getFile(config.planetTypesList);
+    var planetPaths = resources.getJSON( config.planetTypesList );
+
     var loadedPlanets = loadTypes(planetPaths || []);
 
     return {
@@ -39,22 +40,17 @@ define(["planet/planetProperties", "resources", "config"],
     function loadProperties(name) {
 
         var path = config.basePlanetsDataDir + name + "/";
-        var parsed = resources.getFile(path + "properties.json");
+        var parsed = resources.getJSON(path + "properties.json",
+                                       { addParenthesis: true });
 
-        if(typeof(parsed) === "string") {
 
-            parsed = JSON.parse(parsed);
+        if(!parsed.rendFragShaderPath) {
 
-        }
-
-        if(!parsed.genFragShaderPath || !parsed.rendFragShaderPath) {
-
-            throw "Properties must set both genFragShaderPath and rendFragShaderPath";
+            throw "Properties must set rendFragShaderPath!";
 
         }
 
-        return properties.create(name, path, parsed.genFragShaderPath,
-                                 parsed.rendFragShaderPath, parsed);
+        return properties.create(name, path, parsed.rendFragShaderPath, parsed);
 
     }
 

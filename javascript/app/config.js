@@ -8,7 +8,10 @@ define(function() {
         baseDataDir: baseDataDir,
         basePlanetsDataDir: basePlanetsDataDir,
         planetTypesList: basePlanetsDataDir + "types.json",
-        heightmapGeneratorVertex: baseDataDir + "heightmapVertex",
+        heightmapGeneratorFirstPassVertex: baseDataDir + "heightmapFirstPassVertex",
+        heightmapGeneratorFirstPassFrag: baseDataDir + "heightmapFirstPassFrag",
+        heightmapGeneratorSecondPassVertex: baseDataDir + "heightmapSecondPassVertex",
+        heightmapGeneratorSecondPassFrag: baseDataDir + "heightmapSecondPassFrag",
         planetVertex: basePlanetsDataDir + "planetVertex",
         debug: true,
 

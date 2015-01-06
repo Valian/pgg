@@ -1,6 +1,10 @@
-{
-    "genFragShaderPath": "gen.frag",
-    "rendFragShaderPath": "rend.frag",
-    "chunkSegments": 30,
-    "planetSurfaceMax": 2000
-}
+"rendFragShaderPath": "rend.frag",
+"chunkSegments": 10,
+"lodMaxDetailLevel": 8,
+"planetSurfaceMax": 2000,
+"noiseMultipliers": [
+    [0.5, 1],
+    [0.25, 2],
+    [0.125, 4],
+    [0.0625, 8]
+]

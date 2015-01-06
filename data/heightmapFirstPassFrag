@@ -82,25 +82,15 @@ float snoise(vec3 v)
 }
 
 varying vec3 varyingPosition;
-varying vec2 vUv;
+varying float mult;
 
 uniform float noiseFrequency;
-uniform sampler2D renderTarget;
 
 void main()
 {
     vec3 v = noiseFrequency * normalize(varyingPosition);
 
-    float n = snoise(v);
-    n += 0.5 * snoise(v * 2.0);
-    n += 0.25 * snoise(v * 4.0);
-    n += 0.125 * snoise(v * 8.0);
-    n += 0.0625 * snoise(v * 16.0);
-    n += 0.03125 * snoise(v * 32.0);
+    float color = snoise(v * mult) * 0.5 + 0.5;
 
-    float color = n * 0.5 + 0.5;
-
-    vec3 result = texture2D(renderTarget, vUv).xyz + color;
-
-    gl_FragColor = vec4(result, 1.0);
+    gl_FragColor = vec4(color, color, color, 1.0);
 }

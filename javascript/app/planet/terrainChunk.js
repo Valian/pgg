@@ -36,6 +36,8 @@ define(["three", "planet/faceMesh", "camera", "planet/chunkVisibilityTest", "pla
                                     this.material, position, rotation,
                                     number, planet.planetRadius);
 
+        this.planet.add(this.mesh);
+
         this.corners = createCorners(this.mesh.geometry,
                                      planet.planetType.chunkSegments);
 
@@ -46,6 +48,12 @@ define(["three", "planet/faceMesh", "camera", "planet/chunkVisibilityTest", "pla
         if(number == -1) {
 
             this.setHeightmap(this.generateHeightmap());
+            //this.split();
+            for (var i = 0; i < this.chunks.length; i++) {
+
+                //this.chunks[i].split();
+
+            }
 
         }
 
@@ -68,7 +76,7 @@ define(["three", "planet/faceMesh", "camera", "planet/chunkVisibilityTest", "pla
     function generateHeightmap() {
 
         var heightmapGen = this.planet.planetType.heightmapGenerator;
-        var seed = this.planet.seed;
+        var seed = this.planet.seed * 100;
         var corners = this.corners;
         var seedVector = new THREE.Vector3(seed, seed, seed);
 
@@ -103,7 +111,7 @@ define(["three", "planet/faceMesh", "camera", "planet/chunkVisibilityTest", "pla
 
          for (var key in this.corners) {
 
-             var newCenter = this.corners[key].sub(position)
+             var newCenter = this.corners[key].clone().sub(position)
                              .divideScalar(2).add(position);
 
              var chunk = new TerrainChunk(this.planet, size / 2,
@@ -112,7 +120,7 @@ define(["three", "planet/faceMesh", "camera", "planet/chunkVisibilityTest", "pla
              chunk.setHeightmap(heightmap);
 
              this.chunks.push(chunk);
-             this.mesh.parent.add(chunk.mesh);
+             this.planet.add(chunk.mesh);
 
          }
 
@@ -124,11 +132,14 @@ define(["three", "planet/faceMesh", "camera", "planet/chunkVisibilityTest", "pla
 
         if (!this.isDivided) return;
 
-        for (var key in this.chunks) {
-            var chunk = this.chunks[key];
+        for (var i = 0; i < this.chunks.length; i++) {
+
+            var chunk = this.chunks[i];
 
             chunk.merge();
-            chunk.mesh.dispose();
+
+            chunk.mesh.disposeMesh();
+
         }
 
         this.chunks = [];
@@ -146,7 +157,7 @@ define(["three", "planet/faceMesh", "camera", "planet/chunkVisibilityTest", "pla
 
         this.mesh.visible = this.visibleByCamera && !this.isDivided;
 
-        for (var i in this.chunks) {
+        for (var i = 0; i < this.chunks.length; i++) {
 
             this.chunks[i].update(maxDetailLevel, actualLevel + 1);
 

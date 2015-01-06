@@ -1,3 +1,5 @@
-"genFragShaderPath": "gen.frag",
-"rendFragShaderPath": "rend.frag"
+{
+    "genFragShaderPath": "gen.frag",
+    "rendFragShaderPath": "rend.frag"
+}
 

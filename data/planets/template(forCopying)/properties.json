@@ -1,21 +1,23 @@
-"genFragShaderPath": "gen.frag",
-"rendFragShaderPath": "rend.frag",
+{
+    "genFragShaderPath": "gen.frag",
+    "rendFragShaderPath": "rend.frag",
 
-"chunkSegments": 30,
-"lodMaxDetailLevel": 3,
+    "chunkSegments": 30,
+    "lodMaxDetailLevel": 3,
 
-"planetRadiusMin": 10000,
-"planetRadiusMax": 12000,
-"planetSurfaceMin": 300,
-"planetSurfaceMax": 2000,
+    "planetRadiusMin": 10000,
+    "planetRadiusMax": 12000,
+    "planetSurfaceMin": 300,
+    "planetSurfaceMax": 2000,
 
-"this.noiseFrequency": 1,
+    "this.noiseFrequency": 1,
 
-"noiseMultipliers": [
-    [0.5, 1],
-    [0.25, 2],
-    [0.125, 4],
-    [0.0625, 8]
-],
+    "noiseMultipliers": [
+        [0.5, 1],
+        [0.25, 2],
+        [0.125, 4],
+        [0.0625, 8]
+    ],
 
-"uniforms": { }
+    "uniforms": { }
+}

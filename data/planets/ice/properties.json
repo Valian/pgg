@@ -1,5 +1,6 @@
 {
     "genFragShaderPath": "gen.frag",
-    "rendFragShaderPath": "rend.frag"
+    "rendFragShaderPath": "rend.frag",
+    "noiseMultipliers": "LOOOOL"
 }
 

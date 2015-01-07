@@ -1,6 +1,17 @@
 import json
 import os
 from flask import url_for
+from argparse import ArgumentParser
+
+
+def deepupdate(source, destination):
+    for k, v in source.items():
+        if isinstance(v, dict):
+            if k in destination:
+                deepupdate(source[k], destination[k])
+            else:
+                destination[k] = v
+        destination[k] = v
 
 
 def load_json(path):
@@ -12,17 +23,19 @@ def load_json(path):
 
 
 def list_subdirectories(dirpath):
-    for name in os.listdir(dirpath):
-        abspath = os.path.join(dirpath, name)
-        if os.path.isdir(abspath):
-            yield name, abspath
+    for subdirname in os.listdir(dirpath):
+        subdirpath = os.path.join(dirpath, subdirname)
+        if os.path.isdir(subdirpath):
+            print subdirname
+            yield subdirname, subdirpath
 
 
 def list_files(dirpath):
-    for name in os.listdir(dirpath):
-        abspath = os.path.join(dirpath, name)
-        if os.path.isfile(os.path.join(dirpath, name)):
-            yield name, abspath
+    for filename in os.listdir(dirpath):
+        filepath = os.path.join(dirpath, filename)
+        if os.path.isfile(filepath):
+            filename, extension = os.path.splitext(filename)
+            yield filename, extension.replace('.', ''), filepath
 
 
 def load_file_content(path):
@@ -35,3 +48,10 @@ def load_file_content(path):
 
 def without_extension(path):
     return os.path.splitext(path)[0]
+
+
+def parse_arguments():
+    argument_parser = ArgumentParser()
+    argument_parser.add_argument('-d', '--debug', action='store_true')
+    argument_parser.add_argument('-p', '--port', type=int, default=8000)
+    return argument_parser.parse_args()

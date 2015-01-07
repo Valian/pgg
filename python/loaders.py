@@ -1,6 +1,7 @@
 from utils import list_files, list_subdirectories, deepupdate
 from flask import url_for
 import json
+from copy import deepcopy
 
 
 class TextFileExtractor(object):
@@ -51,6 +52,7 @@ class ObjectsDefinitionsLoader(DataLoader):
         data = {}
         defaults = self.load_data_from_directory(self.directory)
         for dirname, dirpath in list_subdirectories(self.directory):
-            data[dirname] = defaults.copy()
+            data[dirname] = deepcopy(defaults)
+            self.load_data_from_directory(dirpath)
             deepupdate(self.load_data_from_directory(dirpath), data[dirname])
         return data

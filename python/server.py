@@ -14,9 +14,9 @@ HEIGHTMAPS_DIR = os.path.join(DATA_DIR, 'heightmaps')
 CONFIG_DIR = os.path.join(DATA_DIR, 'config')
 
 LOADERS = (
-    ('heightmaps', SimpleDataLoader(HEIGHTMAPS_DIR)),
+#    ('heightmaps', SimpleDataLoader(HEIGHTMAPS_DIR)),
     ('planets', ObjectsDefinitionsLoader(PLANETS_DIR)),
-    ('config', SimpleDataLoader(CONFIG_DIR)),
+#    ('config', SimpleDataLoader(CONFIG_DIR)),
 )
 
 

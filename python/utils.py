@@ -8,7 +8,8 @@ def deepupdate(source, destination):
                 deepupdate(source[k], destination[k])
             else:
                 destination[k] = v
-        destination[k] = v
+        else:
+            destination[k] = v
 
 
 def list_subdirectories(dirpath):

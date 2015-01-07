@@ -2,12 +2,14 @@ precision highp float;
 
 uniform float multipliers[OCTAVES];
 uniform sampler2D sourceTexture;
+uniform float verticalCount;
+uniform float row;
 
 varying vec2 vUV;
 
 vec4 snoise(int level)
 {
-    vec2 coords = vec2((vUV.x + float(level)) / FOCTAVES, vUV.y);
+    vec2 coords = vec2((vUV.x + float(level)) / FOCTAVES, (vUV.y + row) / verticalCount);
     return texture2D(sourceTexture, coords);
 }
 
@@ -21,4 +23,5 @@ void main()
     }
 
     gl_FragColor = color;
+    //gl_FragColor = vec4(row / verticalCount, row / verticalCount, row / verticalCount, 1.0);
 }

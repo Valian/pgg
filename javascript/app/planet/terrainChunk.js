@@ -1,11 +1,18 @@
-define(["three", "planet/faceMesh", "camera", "planet/chunkVisibilityTest", "planet/lodSystem"],
-       function( THREE, faceMesh, camera, visibilityTest, LOD){
+define( function (require) {
+
+    var THREE = require("three"),
+        camera = require("camera"),
+        faceMesh = require("planet/faceMesh"),
+        visibilityTest = require("planet/chunkVisibilityTest"),
+        LOD = require("planet/lodSystem"),
+        heightmapManager = require("planet/heightmapManager");
 
     TerrainChunk.prototype.split = split;
     TerrainChunk.prototype.merge = merge;
     TerrainChunk.prototype.update = update;
     TerrainChunk.prototype.generateHeightmap = generateHeightmap;
     TerrainChunk.prototype.setHeightmap = setHeightmap;
+    TerrainChunk.prototype.createHeightmapParams = createHeightmapParams;
 
 
     return {
@@ -34,12 +41,14 @@ define(["three", "planet/faceMesh", "camera", "planet/chunkVisibilityTest", "pla
 
         this.mesh = faceMesh.create(size, planet.planetType.chunkSegments,
                                     this.material, position, rotation,
-                                    number, planet.planetRadius);
+                                    number, planet.planetRadius, planet.surfaceHeight);
 
         this.planet.add(this.mesh);
 
         this.corners = createCorners(this.mesh.geometry,
                                      planet.planetType.chunkSegments);
+
+        this.heightmapParams = this.createHeightmapParams();
 
         this.visibleByCamera = true;
         this.isDivided = false;
@@ -48,12 +57,6 @@ define(["three", "planet/faceMesh", "camera", "planet/chunkVisibilityTest", "pla
         if(number == -1) {
 
             this.setHeightmap(this.generateHeightmap());
-            //this.split();
-            for (var i = 0; i < this.chunks.length; i++) {
-
-                //this.chunks[i].split();
-
-            }
 
         }
 
@@ -75,17 +78,7 @@ define(["three", "planet/faceMesh", "camera", "planet/chunkVisibilityTest", "pla
 
     function generateHeightmap() {
 
-        var heightmapGen = this.planet.planetType.heightmapGenerator;
-        var seed = this.planet.seed * 100;
-        var corners = this.corners;
-        var seedVector = new THREE.Vector3(seed, seed, seed);
-
-        return heightmapGen.generateTexture(
-            corners[0],
-            corners[2],
-            corners[1],
-            seedVector
-        );
+        return heightmapManager.getTexture(this.heightmapParams);
 
     }
 
@@ -94,6 +87,23 @@ define(["three", "planet/faceMesh", "camera", "planet/chunkVisibilityTest", "pla
         this.material.uniforms.heightmapTex = {
             type: "t",
             value: heightmap
+        };
+
+    }
+
+    function createHeightmapParams() {
+
+        var heightmapGen = this.planet.planetType.heightmapGenerator;
+
+        return {
+
+            generator: heightmapGen,
+            corners: this.corners,
+            //leftTop: this.corners[0],
+            //leftBottom: this.corners[2],
+            //rightTop: this.corners[1],
+            seed: this.planet.seed * 1000,
+
         };
 
     }
@@ -142,6 +152,7 @@ define(["three", "planet/faceMesh", "camera", "planet/chunkVisibilityTest", "pla
 
         }
 
+        heightmapManager.markAsUnused(this.heightmapParams);
         this.chunks = [];
         this.mesh.visible = true;
         this.isDivided = false;

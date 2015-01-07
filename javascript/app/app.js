@@ -6,7 +6,8 @@ define( function (require) {
         renderer = require("renderer"),
         scene = require("scene"),
         stats = require("stats"),
-        planetManager = require("planet/planetManager");
+        planetManager = require("planet/planetManager"),
+        heightmapManager = require("planet/heightmapManager");
 
     return {
 
@@ -26,6 +27,7 @@ define( function (require) {
             requestAnimationFrame(render);
 
             planetManager.update();
+            heightmapManager.update();
             controls.update(delta);
             camera.updateFrustum();
             stats.update(renderer);

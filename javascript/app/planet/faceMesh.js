@@ -3,27 +3,26 @@ define(["three"], function(THREE){
     FaceMesh.prototype = Object.create(THREE.Mesh.prototype);
 
     FaceMesh.prototype.disposeMesh = disposeMesh;
-
     FaceMesh.prototype.computeBoundingBox = computeBoundingBox;
 
 
     return {
 
-        create: function(size, segments, material, position, rotation, number, planetRadius) {
+        create: function(size, segments, material, position, rotation, number, planetRadius, surfaceHeight) {
 
-            return new FaceMesh(size, segments, material, position, rotation, number, planetRadius);
+            return new FaceMesh(size, segments, material, position, rotation, number, planetRadius, surfaceHeight);
 
         }
 
     };
 
-    function FaceMesh(size, segments, material, position, rotation, number, planetRadius) {
+    function FaceMesh(size, segments, material, position, rotation, number, planetRadius, surfaceHeight) {
 
         var geometry = new THREE.PlaneBufferGeometry(size, size, segments, segments);
 
         rotateGeometry(geometry, rotation);
         moveGeometry(geometry, position);
-        computeGeometryBoundingBox(geometry, planetRadius);
+        computeGeometryBoundingBox(geometry, planetRadius, surfaceHeight);
 
         if(number >= 0) {
 
@@ -71,7 +70,7 @@ define(["three"], function(THREE){
 
         }
 
-        function computeGeometryBoundingBox(geometry, planetRadius) {
+        function computeGeometryBoundingBox(geometry, planetRadius, surfaceHeight) {
 
             var positions = geometry.attributes.position.array;
             var vector = new THREE.Vector3();
@@ -80,10 +79,13 @@ define(["three"], function(THREE){
 
             if (positions) {
 
-                for (var i = 0, il = positions.length; i < il; i += 3) {
+                for (var i = 0, il = positions.length * 3; i < il; i += 3) {
 
                     vector.set(positions[i], positions[i + 1], positions[i + 2]);
                     vector.normalize().multiplyScalar(planetRadius);
+                    geometry.boundingBox.expandByPoint(vector);
+
+                    vector.normalize().multiplyScalar(planetRadius + surfaceHeight);
                     geometry.boundingBox.expandByPoint(vector);
 
                 }
@@ -120,7 +122,6 @@ define(["three"], function(THREE){
 
 
         this.geometry.dispose();
-        this.material.uniforms.heightmapTex.value.dispose();
         this.material.dispose();
 
     }
@@ -139,10 +140,8 @@ define(["three"], function(THREE){
 
         if (this.parent) {
 
-            var min = this.boundingBox.min.clone().add(this.parent.position);
-            var max = this.boundingBox.max.clone().add(this.parent.position);
-
-            this.boundingBox.set(min, max);
+            this.boundingBox.min.add(this.parent.position);
+            this.boundingBox.max.add(this.parent.position);
 
         }
 

@@ -7,7 +7,7 @@ define(["planet/planetProperties", "resources", "config"],
 
     return {
 
-        types: loadedPlanets,
+        planetTypes: loadedPlanets,
         debug: loadProperties('debugPlanet'),
 
     }

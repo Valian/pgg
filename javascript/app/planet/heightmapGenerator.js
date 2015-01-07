@@ -29,25 +29,9 @@ define(["three", "renderer", "resources", "config", "scene"],
         this.createRenderTarget = createRenderTarget;
 
         var _this = this;
-        debugger;
+
         createFirstPassScene();
         createSecondPassScene(properties.heightmapFrag);
-
-        function generateTexture(leftTop, leftBottom, rightTop, seedVector, renderTarget) {
-
-            renderTarget = renderTarget || createRenderTarget(this.size, this.size);
-            var clock = new THREE.Clock();
-
-            clock.getDelta();
-
-            this.makeFirstPass(leftTop, leftBottom, rightTop, seedVector);
-            this.makeSecondPass(renderTarget);
-
-            console.log(clock.getDelta());
-
-            return renderTarget;
-
-        };
 
         function generateTextures(parametersArray) {
 

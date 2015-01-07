@@ -1,6 +1,6 @@
 define(["three"], function (THREE) {
 
-    var camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000000);
+    var camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 50, 10000000);
 
     camera.frustum = new THREE.Frustum();
     camera.updateFrustum = update;

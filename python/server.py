@@ -1,7 +1,7 @@
 import os
 import json
 from flask import Flask, render_template, Response
-from loaders import HeightmapsLoader, ObjectsDefinitionsLoader
+from loaders import SimpleDataLoader, ObjectsDefinitionsLoader
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -11,10 +11,12 @@ JAVASCRIPT_DIR = os.path.join(BASE_DIR, 'javascript')
 
 PLANETS_DIR = os.path.join(DATA_DIR, 'planets')
 HEIGHTMAPS_DIR = os.path.join(DATA_DIR, 'heightmaps')
+CONFIG_DIR = os.path.join(DATA_DIR, 'config')
 
 LOADERS = (
-    ('heightmaps', HeightmapsLoader(HEIGHTMAPS_DIR)),
+    ('heightmaps', SimpleDataLoader(HEIGHTMAPS_DIR)),
     ('planets', ObjectsDefinitionsLoader(PLANETS_DIR)),
+    ('config', SimpleDataLoader(CONFIG_DIR)),
 )
 
 

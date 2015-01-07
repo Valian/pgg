@@ -41,7 +41,7 @@ class DataLoader(object):
         return data
 
 
-class HeightmapsLoader(DataLoader):
+class SimpleDataLoader(DataLoader):
     def load(self):
         return self.load_data_from_directory(self.directory)
 

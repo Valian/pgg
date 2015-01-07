@@ -2,11 +2,12 @@ define(['seedrandom'], function(seedrandom) {
 
 	function SeededRandom(seed) {
 
-		this.random = seedrandom(seed.toString());
+		this.seed = seed;
+		this.random = seedrandom(this.seed.toString());
 
 		this.nextRandomFloatFromRange = function(from, to) {
 			return this.random() * (to - from) + from;
-		}
+		};
 
 		this.nextRandomIntFromRange = function(from, to) {
 			return Math.floor(this.random() * (to - from) + from);

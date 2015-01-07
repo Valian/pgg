@@ -1,2 +1,2 @@
 #!/bin/sh
-python python/server.py "$@"
+python python/server.py

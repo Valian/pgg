@@ -44,6 +44,7 @@ define(["three", "planet/heightmapGenerator", "resources", "utils/settings", "co
                                 config.heightmapGeneratorSecondPassFrag;
 
             _this.heightmapGenerator = heightmapGenerator.create(
+                    _this.name,
                     2 * _this.chunkSegments,
                     _this.noiseMultipliers,
                     _this.noiseFrequency,

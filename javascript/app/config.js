@@ -13,6 +13,7 @@ define(function() {
         heightmapGeneratorSecondPassVertex: baseDataDir + "heightmapSecondPassVertex",
         heightmapGeneratorSecondPassFrag: baseDataDir + "heightmapSecondPassFrag",
         planetVertex: basePlanetsDataDir + "planetVertex",
+        generatorParallelity: 50,
         debug: true,
 
     };

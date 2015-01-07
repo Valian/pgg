@@ -18,9 +18,15 @@ define(["three", "scene", "planet/planetTypes", "seedrandom", "planet/planet", "
 
     function generatePlanets(seed) {
 
-        var newPlanet = this.createPlanet(seed || "test");
+        var randomGen = seedrandom(seed || "test");
 
-        newPlanet.position.z -= 60000;
+        for(var i = 0; i < 50; i++) {
+
+            var newPlanet = this.createPlanet(randomGen().toString());
+            newPlanet.position.z -= 60000;
+            newPlanet.position.x += 20000 * i;
+
+        }
 
     }
 

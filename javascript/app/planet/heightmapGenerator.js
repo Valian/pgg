@@ -4,29 +4,34 @@ define(["three", "renderer", "resources", "config", "scene"],
 
     return {
 
-        create: function(name, size, noiseMultipliers, noiseFrequency, fragmentShaderPath) {
+        create: function(size, properties) {
 
-            return new HeightmapGenerator(name, size, noiseMultipliers, noiseFrequency, fragmentShaderPath);
+            return new HeightmapGenerator(size, properties);
 
         },
 
     };
 
-    function HeightmapGenerator(name, size, noiseMultipliers, noiseFrequency, fragmentShaderPath) {
+    function HeightmapGenerator(size, properties) {
 
-        this.name = name;
+        this.name = properties.name;
+
+        this.paralell = config.config.heightmapGenerator.generatorParallelity;
 
         this.size = size;
-        this.noiseMultipliers = noiseMultipliers;
-        this.octaves = noiseMultipliers !== undefined ? noiseMultipliers.length : 1;
-        this.noiseFrequency = noiseFrequency;
+        this.noiseMultipliers = properties.noiseMultipliers;
+        this.octaves = this.noiseMultipliers !== undefined
+                       ? this.noiseMultipliers.length
+                       : 1;
 
+        this.noiseFrequency = properties.noiseFrequency;
         this.generateTextures = generateTextures;
         this.createRenderTarget = createRenderTarget;
 
         var _this = this;
+        debugger;
         createFirstPassScene();
-        createSecondPassScene(fragmentShaderPath);
+        createSecondPassScene(properties.heightmapFrag);
 
         function generateTexture(leftTop, leftBottom, rightTop, seedVector, renderTarget) {
 
@@ -48,7 +53,8 @@ define(["three", "renderer", "resources", "config", "scene"],
 
             do {
 
-                var part = parametersArray.splice(0, config.generatorParallelity);
+
+                var part = parametersArray.splice(0, _this.paralell);
 
                 var count = part.length;
                 var sourceTex = makeFirstPass(count, part);
@@ -153,12 +159,12 @@ define(["three", "renderer", "resources", "config", "scene"],
 
         }
 
-        function createSecondPassScene(fragmentShaderPath) {
+        function createSecondPassScene(fragShader) {
 
             var scene = new THREE.Scene();
 
             var geometry = createSecondPassGeometry();
-            var material = createSecondPassMaterial(fragmentShaderPath);
+            var material = createSecondPassMaterial(fragShader);
             var mesh = new THREE.Mesh(geometry, material);
             scene.add(mesh);
 
@@ -177,6 +183,7 @@ define(["three", "renderer", "resources", "config", "scene"],
         function createFirstPassMaterial() {
 
             var materialParameters = {
+
                 attributes: {
                     multiplier: { type: 'f', value: [] },
                     cornerPosition: { type: '3fv', value: [] }
@@ -185,19 +192,18 @@ define(["three", "renderer", "resources", "config", "scene"],
                     noiseFrequency: { type: 'f', value: _this.noiseFrequency },
                 },
                 side: THREE.DoubleSide,
+                vertexShader: config.heightmaps.firstPassVert,
+                fragmentShader: config.heightmaps.firstPassFrag,
+
             };
 
-            var material = resources.getRawShaderMaterial(
-                                config.heightmapGeneratorFirstPassVertex,
-                                config.heightmapGeneratorFirstPassFrag,
-                                materialParameters
-            );
+            var material = new THREE.RawShaderMaterial(materialParameters);
 
             return material;
 
         }
 
-        function createSecondPassMaterial(fragmentShaderPath) {
+        function createSecondPassMaterial(fragmentShader) {
 
             var octaves = _this.octaves, noiseMultipliers = _this.noiseMultipliers;
 
@@ -223,14 +229,12 @@ define(["three", "renderer", "resources", "config", "scene"],
 
                 },
                 side: THREE.DoubleSide,
+                vertexShader: config.heightmaps.secondPassVert,
+                fragmentShader: config.heightmaps.secondPassFrag,
 
             };
 
-            return resources.getShaderMaterial(
-                config.heightmapGeneratorSecondPassVertex,
-                fragmentShaderPath,
-                materialParameters
-            );
+            return new THREE.ShaderMaterial( materialParameters );
 
         }
 
@@ -238,7 +242,7 @@ define(["three", "renderer", "resources", "config", "scene"],
 
             var octaves = _this.octaves, segments = _this.size;
             var noiseMultipliers = _this.noiseMultipliers;
-            var verticalCount = config.generatorParallelity;
+            var verticalCount = _this.paralell;
 
             var planeGeometry = new THREE.BufferGeometry();
 

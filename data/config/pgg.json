@@ -1,0 +1,7 @@
+{
+    "debugPlanetName": "debugPlanet",
+    "notIncludedPlanets": [
+        "template(forCopying)"
+    ],
+    "debug": true
+}

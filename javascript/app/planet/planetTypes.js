@@ -1,56 +1,23 @@
-define(["planet/planetProperties", "resources", "config"],
-       function(properties, resources, config){
+define(["planet/planetProperties", "config"],
+       function(properties, config){
 
-    var planetPaths = resources.getJSON( config.planetTypesList );
+    var loadedPlanets = loadTypes(config.planets);
 
-    var loadedPlanets = loadTypes(planetPaths || []);
-
-    return {
-
-        planetTypes: loadedPlanets,
-        debug: loadProperties('debugPlanet'),
-
-    }
+    return loadedPlanets;
 
 
-    function loadTypes(paths) {
+    function loadTypes(planets) {
 
         var types = [];
 
-        for(var i=0; i<paths.length; i++) {
+        for(var name in planets) {
 
-            var name = paths[i];
-
-            try {
-
-                types.push(loadProperties(name));
-
-            } catch(e) {
-
-                console.warn(e);
-
-            }
+            var p = properties.create(name, planets[name]);
+            types.push(p);
 
         }
 
         return types;
-
-    }
-
-    function loadProperties(name) {
-
-        var path = config.basePlanetsDataDir + name + "/";
-        var parsed = resources.getJSON(path + "properties.json",
-                                       { addParenthesis: true });
-
-
-        if(!parsed.rendFragShaderPath) {
-
-            throw "Properties must set rendFragShaderPath!";
-
-        }
-
-        return properties.create(name, path, parsed.rendFragShaderPath, parsed);
 
     }
 

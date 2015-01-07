@@ -27,6 +27,16 @@ define([], function() {
 
         },
 
+        update: function(target, source) {
+
+            for(var k in source) {
+
+                target[k] = source[k];
+
+            }
+
+        }
+
     };
 
 });

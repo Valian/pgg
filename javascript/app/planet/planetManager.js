@@ -20,13 +20,9 @@ define(["three", "scene", "planet/planetTypes", "seedrandom", "planet/planet", "
 
         var randomGen = seedrandom(seed || "test");
 
-        for(var i = 0; i < 50; i++) {
-
-            var newPlanet = this.createPlanet(randomGen().toString());
-            newPlanet.position.z -= 60000;
-            newPlanet.position.x += 20000 * i;
-
-        }
+        var newPlanet = this.createPlanet(randomGen().toString());
+        newPlanet.position.z -= 60000;
+        newPlanet.position.x += 20000 ;
 
     }
 
@@ -50,18 +46,10 @@ define(["three", "scene", "planet/planetTypes", "seedrandom", "planet/planet", "
 
     function getRandomPlanetType(randomGen) {
 
-        if( config.debug ) {
+        var randomPlanetIndex = Math.floor(randomGen() * planetTypes.length);
+        var planetType = planetTypes[randomPlanetIndex];
 
-            return planetTypes.debug;
-
-        } else {
-
-            var randomPlanetIndex = Math.floor(randomGen() * planetTypes.types.length);
-            var planetType = planetTypes.types[randomPlanetIndex];
-
-            return planetType;
-
-        }
+        return planetType;
 
     }
 
@@ -69,8 +57,8 @@ define(["three", "scene", "planet/planetTypes", "seedrandom", "planet/planet", "
 
         attributes = {
 
-            planetRadius: getRandom(planetType.planetRadiusMin, planetType.planetRadiusMax),
-            planetSurface: getRandom(planetType.planetSurfaceMin, planetType.planetSurfaceMax),
+            planetRadius: getRandom(planetType.planetRadius.min, planetType.planetRadius.max),
+            planetSurface: getRandom(planetType.planetSurface.min, planetType.planetSurface.max),
             material: planetType.material.clone(),
 
         };

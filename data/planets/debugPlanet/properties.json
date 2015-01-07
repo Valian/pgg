@@ -2,7 +2,15 @@
     "rendFragShaderPath": "rend.frag",
     "chunkSegments": 10,
     "lodMaxDetailLevel": 8,
-    "planetSurfaceMax": 2000,
+    "noiseFrequency" : 1,
+    "planetRadius": {
+        "min": 10000,
+        "max": 12000
+    },
+    "planetSurface": {
+        "min": 300,
+        "max": 2000
+    },
     "noiseMultipliers": [
         [0.5, 1],
         [0.25, 2],

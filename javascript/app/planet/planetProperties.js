@@ -3,66 +3,52 @@ define(["three", "planet/heightmapGenerator", "resources", "utils/settings", "co
 
     return {
 
-        create: function(name, relativePath,  rendFragShaderPath, settings) {
+        create: function(name, planetConfig) {
 
-            return new PlanetProperties(name, relativePath,  rendFragShaderPath, settings);
+            return new PlanetProperties(name, planetConfig);
 
         },
 
     };
 
-    function PlanetProperties(name, relativePath, rendFragShaderPath, settings) {
+    function PlanetProperties(name, planetConfig) {
 
         this.name = name;
 
-        this.chunkSegments = 10;
-        this.lodMaxDetailLevel = 3;
-        this.noiseMultipliers = [
-            [1, 1]
-        ];
+        this.chunkSegments = null;
+        this.lodMaxDetailLevel = null;
+        this.noiseMultipliers = null;
 
-        this.planetRadiusMin = 10000;
-        this.planetRadiusMax = 12000;
-        this.planetSurfaceMin = 300;
-        this.planetSurfaceMax = 1000;
+        this.planetRadius = null;
+        this.planetSurface = null;
 
-        this.noiseFrequency = 1;
+        this.noiseFrequency = null;
 
-        settingsUtils.applySettings(this, settings);
+        settingsUtils.update(this, planetConfig.properties);
+        settingsUtils.update(this, planetConfig);
 
-        this.uniforms = parseUniforms(settings.uniforms || {});
 
-        this.toAbsolutePath = toAbsolutePath;
+        this.uniforms = parseUniforms(this.uniforms || {});
 
         initialize(this);
 
 
-        function initialize(_this) {
+        function initialize(properties) {
 
-            var genFragShaderPath = settings.genFragShaderPath !== undefined ?
-                                toAbsolutePath(settings.genFragShaderPath) :
-                                config.heightmapGeneratorSecondPassFrag;
+            properties.heightmapGenerator = heightmapGenerator.create(
 
-            _this.heightmapGenerator = heightmapGenerator.create(
-                    _this.name,
-                    2 * _this.chunkSegments,
-                    _this.noiseMultipliers,
-                    _this.noiseFrequency,
-                    genFragShaderPath
-                );
+                2 * properties.chunkSegments,
+                properties
 
-            _this.material = createMaterial(
-                   config.planetVertex,
-                   toAbsolutePath(rendFragShaderPath),
-                   _this.uniforms,
-                   _this.chunkSegments
-               );
+            );
 
-        }
+            properties.material = new THREE.ShaderMaterial({
 
-        function toAbsolutePath(path) {
+                vertexShader: properties.planetVertex,
+                fragmentShader: properties.planetFragment,
+                uniforms: THREE.UniformsUtils.clone( properties.uniforms )
 
-            return relativePath + path;
+            });
 
         }
 
@@ -72,8 +58,8 @@ define(["three", "planet/heightmapGenerator", "resources", "utils/settings", "co
 
                 if(uniforms[key].type === "t") {
 
-                    var path = toAbsolutePath(uniforms[key].value);
-                    uniforms[key].value = resources.getTexture(path);
+                    //var path = toAbsolutePath(uniforms[key].value);
+                    //uniforms[key].value = resources.getTexture(path);
 
                 }
 
@@ -82,18 +68,6 @@ define(["three", "planet/heightmapGenerator", "resources", "utils/settings", "co
             return uniforms;
 
         }
-
-        function createMaterial(vertPath, fragPath, uniforms, segments) {
-
-            var material = resources.getShaderMaterial(vertPath, fragPath);
-
-            material.uniforms = THREE.UniformsUtils.clone( uniforms );
-            //material.wireframe = true;
-
-            return material;
-
-        }
-
     }
 });
 

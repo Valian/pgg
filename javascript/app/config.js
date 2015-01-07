@@ -1,21 +1,33 @@
-define(function() {
+define(["resources"], function(resources) {
 
-    var baseDataDir = "/data/";
-    var basePlanetsDataDir = baseDataDir + "planets/";
+    var dataUrl = "/data/load/";
+    var data = resources.getJSON(dataUrl, {cache: false});
+    var config = data.config;
+    var pgg = config.pgg;
 
-    return {
+    for(var i = 0; i < pgg.notIncludedPlanets.length; i++) {
 
-        baseDataDir: baseDataDir,
-        basePlanetsDataDir: basePlanetsDataDir,
-        planetTypesList: basePlanetsDataDir + "types.json",
-        heightmapGeneratorFirstPassVertex: baseDataDir + "heightmapFirstPassVertex",
-        heightmapGeneratorFirstPassFrag: baseDataDir + "heightmapFirstPassFrag",
-        heightmapGeneratorSecondPassVertex: baseDataDir + "heightmapSecondPassVertex",
-        heightmapGeneratorSecondPassFrag: baseDataDir + "heightmapSecondPassFrag",
-        planetVertex: basePlanetsDataDir + "planetVertex",
-        generatorParallelity: 50,
-        debug: true,
 
-    };
+        delete data.planets[pgg.notIncludedPlanets[i]];
+
+    }
+
+    if(pgg.debug) {
+
+        data.planets = {
+
+            debugPlanet: data.planets[pgg.debugPlanetName],
+
+        };
+
+    } else {
+
+        delete data.planets[pgg.debugPlanetName];
+
+    }
+
+    //debugger;
+
+    return data;
 
 });

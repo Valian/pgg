@@ -29,6 +29,8 @@ var require = {
     rendererStatsCore: '../lib/threex.rendererstats',
     detector: '../lib/Detector',
     seedrandom: '../lib/seedrandom.min',
-  }
+  },
+
+  urlArgs: "bust=" + (new Date()).getTime(),
 
 };

@@ -10,7 +10,6 @@ define(["three", "jquery"], function(THREE, $) {
 
     };
 
-
     function getShaderMaterial(vertexShaderPath, fragmentShaderPath, data) {
 
         data = getShaderData(vertexShaderPath, fragmentShaderPath, data);

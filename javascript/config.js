@@ -31,6 +31,6 @@ var require = {
     seedrandom: '../lib/seedrandom.min',
   },
 
-  urlArgs: "bust=" + (new Date()).getTime(),
+  //urlArgs: "bust=" + (new Date()).getTime(),
 
 };

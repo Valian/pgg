@@ -22,7 +22,6 @@ class JsonFileExtractor(TextFileExtractor):
 
 class DataLoader(object):
     extractors = {
-        'png': ImageFileExtractor,
         'vert': TextFileExtractor,
         'frag': TextFileExtractor,
         'json': JsonFileExtractor,
@@ -32,13 +31,19 @@ class DataLoader(object):
         self.directory = directory
 
     def get_extractor_for_extension(self, extension):
+        if extension not in self.extractors:
+            return None;
+
         return self.extractors[extension]()
 
     def load_data_from_directory(self, directory):
         data = {}
         for filename, extension, filepath in list_files(directory):
             extractor = self.get_extractor_for_extension(extension)
-            data[filename] = extractor.extract(filepath)
+
+            if extractor:
+                data[filename] = extractor.extract(filepath)
+
         return data
 
 

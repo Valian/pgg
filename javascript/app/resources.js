@@ -10,7 +10,6 @@ define(["three", "jquery"], function(THREE, $) {
 
     };
 
-
     function getShaderMaterial(vertexShaderPath, fragmentShaderPath, data) {
 
         data = getShaderData(vertexShaderPath, fragmentShaderPath, data);
@@ -39,9 +38,13 @@ define(["three", "jquery"], function(THREE, $) {
 
     }
 
-    function getTexture(path) {
+    function getTexture(path, mapping, onLoad, onError) {
 
-        return THREE.ImageUtils.loadTexture(path);
+        var tex = THREE.ImageUtils.loadTexture(path, mapping, onLoad, onError);
+
+        tex.clone = function() { return this; }
+
+        return tex;
 
     }
 

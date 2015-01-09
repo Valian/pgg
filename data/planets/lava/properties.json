@@ -1,3 +1,5 @@
 {
-
+    "uniforms": {
+        "surfaceTex": { "type": "t", "value": "lava.png" }
+    }
 }

@@ -20,9 +20,13 @@ define(["three", "scene", "planet/planetTypes", "seedrandom", "planet/planet", "
 
         var randomGen = seedrandom(seed || "test");
 
-        var newPlanet = this.createPlanet(randomGen().toString());
-        newPlanet.position.z -= 60000;
-        newPlanet.position.x += 20000 ;
+        for(var i = 0; i < 1; i++) {
+
+            var newPlanet = this.createPlanet(randomGen().toString());
+            newPlanet.position.z -= 60000;
+            newPlanet.position.x += 30000 * i;
+
+        }
 
     }
 
@@ -34,8 +38,15 @@ define(["three", "scene", "planet/planetTypes", "seedrandom", "planet/planet", "
         var planetType = getRandomPlanetType(randomGen);
         var attributes = generateRandomPlanetAttributes(planetType, randomGen);
 
-        var newPlanet = planet.create(attributes.material, attributes.planetRadius,
-                                attributes.planetSurface, planetType, randomGen());
+        var newPlanet = planet.create(
+
+            attributes.material,
+            attributes.planetRadius,
+            attributes.planetSurface,
+            planetType,
+            randomGen()
+
+        );
 
         this.planets.push(newPlanet);
         container.add(newPlanet);

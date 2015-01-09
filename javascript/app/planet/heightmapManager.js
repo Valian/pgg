@@ -70,14 +70,14 @@ define(function() {
 
                 var generator = genData.generator;
 
+                generator.generateTextures( genData.toRender );
+
                 for(var i=0; i<genData.toRender.length; i++) {
 
                     var texName = toTextureName(genData.toRender[i].param);
                     genData.used[texName] = genData.toRender[i].renderTarget;
 
                 }
-
-                generator.generateTextures( genData.toRender );
 
                 genData.toRender = [];
 

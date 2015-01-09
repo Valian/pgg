@@ -7,18 +7,16 @@ define(["resources"], function(resources) {
 
     for(var i = 0; i < pgg.notIncludedPlanets.length; i++) {
 
-
         delete data.planets[pgg.notIncludedPlanets[i]];
 
     }
 
     if(pgg.debug) {
 
-        data.planets = {
+        var debugPlanet = data.planets[pgg.debugPlanetName];
 
-            debugPlanet: data.planets[pgg.debugPlanetName],
-
-        };
+        data.planets = {};
+        data.planets[pgg.debugPlanetName] = debugPlanet;
 
     } else {
 

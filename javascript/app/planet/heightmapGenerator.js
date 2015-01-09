@@ -15,97 +15,41 @@ define(["three", "renderer", "resources", "config", "scene"],
     function HeightmapGenerator(size, properties) {
 
         this.name = properties.name;
-
-        this.paralell = config.config.heightmapGenerator.generatorParallelity;
-
         this.size = size;
+        this.paralell = config.config.heightmapGenerator.generatorParallelity;
         this.noiseMultipliers = properties.noiseMultipliers;
-        this.octaves = this.noiseMultipliers !== undefined
-                       ? this.noiseMultipliers.length
-                       : 1;
-
+        this.octaves = this.noiseMultipliers ? this.noiseMultipliers.length : 1;
         this.noiseFrequency = properties.noiseFrequency;
+
+        this.firstPass = new FirstPassScene(size, this.paralell, this.octaves, properties);
+        this.secondPass = new SecondPassScene(size, this.octaves, properties);
+
         this.generateTextures = generateTextures;
         this.createRenderTarget = createRenderTarget;
 
-        var _this = this;
-
-        createFirstPassScene();
-        createSecondPassScene(properties.heightmapFrag);
-
         function generateTextures(parametersArray) {
+
+            var paramCopy = parametersArray.slice();
 
             do {
 
-
-                var part = parametersArray.splice(0, _this.paralell);
+                var part = paramCopy.splice(0, this.paralell);
 
                 var count = part.length;
-                var sourceTex = makeFirstPass(count, part);
-                makeSecondPass(count, part, sourceTex);
 
-                if(!scene.rendered) {
+                var sourceTex = createRenderTarget(size * this.octaves, size * count);
+                this.firstPass.makePass(count, part, sourceTex);
+                this.secondPass.makePass(count, part, sourceTex);
 
-                    _this.rendered = true;
+                sourceTex.dispose();
 
-                } else {
-
-                    sourceTex.dispose();
-
-                }
-
-            } while (parametersArray.length > 0);
-
-        }
-
-        function makeFirstPass(count, parametersArray) {
-
-            var renderTarget = createRenderTarget(size * _this.octaves, size * count);
-            updateAttribute(parametersArray);
-
-            _this.firstPassScene.camera.top = count;
-            _this.firstPassScene.camera.updateProjectionMatrix();
-
-            renderer.render(
-                _this.firstPassScene.scene,
-                _this.firstPassScene.camera,
-                renderTarget,
-                true
-            );
-
-            if(!_this.rendered) {
-
-                //var geo = new THREE.PlaneBufferGeometry(_this.octaves * 10000, count * 10000, 1, 1);
-                //var mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({map: renderTarget}));
-
-                //scene.add(mesh);
-
-            }
-
-            return renderTarget;
-
-        }
-
-        function makeSecondPass(count, parametersArray, sourceTex) {
-
-            var uniforms = _this.secondPassScene.mesh.material.uniforms;
-
-            uniforms.sourceTexture.value = sourceTex;
-            uniforms.verticalCount.value = count;
-
-            for(var i = 0; i < count; i++) {
-
-                uniforms.row.value = i;
-                renderer.render(_this.secondPassScene.scene, _this.secondPassScene.camera,
-                            parametersArray[i].renderTarget, true);
-
-            }
+            } while (paramCopy.length > 0);
 
         }
 
         function createRenderTarget(width, height) {
 
-            width = width || _this.size;
+            width = width || size;
             height = height || width;
 
             var settings = {
@@ -121,46 +65,40 @@ define(["three", "renderer", "resources", "config", "scene"],
 
         }
 
-        function createFirstPassScene() {
+    };
 
-            var scene = new THREE.Scene();
-            var material = createFirstPassMaterial();
-            var geometry = createFirstPassGeometry();
-            var mesh = new THREE.Mesh(geometry, material);
+    function FirstPassScene(size, paralell, octaves, properties) {
 
-            mesh.FrustumCulled = false;
-            scene.add(mesh);
+        var _this = this;
 
-            var camera = new THREE.OrthographicCamera(0, _this.octaves, 1, 0, 1, 1000);
-            camera.position.set(0, 0, 10);
-            scene.add(camera);
+        this.scene = new THREE.Scene();
+        this.material = createFirstPassMaterial();
+        this.geometry = createFirstPassGeometry();
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
+        this.camera = new THREE.OrthographicCamera(0, octaves, 1, 0, 1, 1000);
 
-            _this.firstPassScene = {
-                scene: scene,
-                camera: camera,
-                mesh: mesh
-            };
+        this.camera.position.set(0, 0, 10);
+        this.mesh.FrustumCulled = false;
+        this.scene.add(this.mesh);
+        this.scene.add(this.camera);
 
-        }
+        this.makePass = makePass;
 
-        function createSecondPassScene(fragShader) {
+        function makePass(count, parametersArray, renderTarget) {
 
-            var scene = new THREE.Scene();
+            updateAttribute(count, parametersArray);
 
-            var geometry = createSecondPassGeometry();
-            var material = createSecondPassMaterial(fragShader);
-            var mesh = new THREE.Mesh(geometry, material);
-            scene.add(mesh);
+            this.camera.top = count;
+            this.camera.updateProjectionMatrix();
 
-            var camera = new THREE.OrthographicCamera(0, 1, 1, 0, 1, 1000);
-            camera.position.set(0,0, 10);
-            scene.add(camera);
+            renderer.render(
 
-            _this.secondPassScene = {
-                scene: scene,
-                camera: camera,
-                mesh: mesh
-            };
+                this.scene,
+                this.camera,
+                renderTarget,
+                true
+
+            );
 
         }
 
@@ -173,7 +111,7 @@ define(["three", "renderer", "resources", "config", "scene"],
                     cornerPosition: { type: '3fv', value: [] }
                 },
                 uniforms: {
-                    noiseFrequency: { type: 'f', value: _this.noiseFrequency },
+                    noiseFrequency: { type: 'f', value: properties.noiseFrequency },
                 },
                 side: THREE.DoubleSide,
                 vertexShader: config.heightmaps.firstPassVert,
@@ -187,46 +125,11 @@ define(["three", "renderer", "resources", "config", "scene"],
 
         }
 
-        function createSecondPassMaterial(fragmentShader) {
-
-            var octaves = _this.octaves, noiseMultipliers = _this.noiseMultipliers;
-
-            var multipliers = [];
-            for(var i = 0; i < noiseMultipliers.length; i++) {
-                multipliers.push(noiseMultipliers[i][0]);
-            }
-
-            var materialParameters = {
-
-                uniforms: {
-
-                    sourceTexture: { type: 't', value: null },
-                    multipliers: { type: 'fv1', value: multipliers },
-                    verticalCount: { type: 'f', value: 1 },
-                    row: { type: 'f', value: 0 },
-
-                },
-                defines: {
-
-                    OCTAVES: octaves,
-                    FOCTAVES: octaves.toString() + ".0",
-
-                },
-                side: THREE.DoubleSide,
-                vertexShader: config.heightmaps.secondPassVert,
-                fragmentShader: config.heightmaps.secondPassFrag,
-
-            };
-
-            return new THREE.ShaderMaterial( materialParameters );
-
-        }
-
         function createFirstPassGeometry() {
 
-            var octaves = _this.octaves, segments = _this.size;
-            var noiseMultipliers = _this.noiseMultipliers;
-            var verticalCount = _this.paralell;
+            var segments = size;
+            var noiseMultipliers = properties.noiseMultipliers;
+            var verticalCount = paralell;
 
             var planeGeometry = new THREE.BufferGeometry();
 
@@ -286,11 +189,10 @@ define(["three", "renderer", "resources", "config", "scene"],
             return planeGeometry;
         }
 
-        function updateAttribute(parametersArray) {
 
-            var octaves = _this.octaves
-            var len = parametersArray.length;
-            var mod = 1 / (2 * _this.size - 2);
+        function updateAttribute(count, parametersArray) {
+
+            var mod = 1 / (2 * size - 2);
 
             var topVector = new THREE.Vector3();
             var leftVector = new THREE.Vector3();
@@ -299,7 +201,7 @@ define(["three", "renderer", "resources", "config", "scene"],
             var temp1 = new THREE.Vector3();
             var temp2 = new THREE.Vector3();
 
-            for(var row = 0; row < len; row++)
+            for(var row = 0; row < count; row++)
             {
 
                 var corners = parametersArray[row].param.corners;
@@ -351,9 +253,89 @@ define(["three", "renderer", "resources", "config", "scene"],
 
         }
 
-        function createSecondPassGeometry() {
+    }
 
-            var octaves = _this.octaves;
+    function SecondPassScene(size, octaves, properties) {
+
+        this.scene = new THREE.Scene();
+        this.geometry = createSecondPassGeometry();
+        this.material = createSecondPassMaterial();
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
+        this.camera = new THREE.OrthographicCamera(0, 1, 1, 0, 1, 1000);
+
+        this.camera.position.set(0,0, 10);
+        this.scene.add(this.camera);
+        this.scene.add(this.mesh);
+
+        this.makePass = makePass;
+
+        function makePass(count, parametersArray, sourceTex) {
+
+            var uniforms = this.mesh.material.uniforms;
+
+            uniforms.sourceTexture.value = sourceTex;
+            uniforms.verticalCount.value = count;
+
+            for(var i = 0; i < count; i++) {
+
+                uniforms.row.value = i;
+
+                renderer.render(
+
+                    this.scene,
+                    this.camera,
+                    parametersArray[i].renderTarget,
+                    true
+
+                );
+
+            }
+
+        }
+
+
+        function createSecondPassMaterial() {
+
+            var noiseMultipliers = properties.noiseMultipliers;
+            var multipliers = [];
+
+            for(var i = 0; i < noiseMultipliers.length; i++) {
+                multipliers.push(noiseMultipliers[i][0]);
+            }
+
+            //TODO - move to planetProperties loading.
+            var heightmapFrag = properties.heightmapFragment ?
+                                properties.heightmapFragment:
+                                config.heightmaps.secondPassFrag;
+
+            var materialParameters = {
+
+                uniforms: {
+
+                    sourceTexture: { type: 't', value: null },
+                    multipliers: { type: 'fv1', value: multipliers },
+                    verticalCount: { type: 'f', value: 1 },
+                    row: { type: 'f', value: 0 },
+
+                },
+                defines: {
+
+                    OCTAVES: octaves,
+                    FOCTAVES: octaves.toString() + ".0",
+
+                },
+                side: THREE.DoubleSide,
+                vertexShader: config.heightmaps.secondPassVert,
+                fragmentShader: heightmapFrag,
+
+            };
+
+            return new THREE.ShaderMaterial( materialParameters );
+
+        }
+
+
+        function createSecondPassGeometry() {
 
             var planeGeometry = new THREE.BufferGeometry();
 
@@ -374,8 +356,7 @@ define(["three", "renderer", "resources", "config", "scene"],
 
         }
 
-
-    };
+    }
 
 });
 

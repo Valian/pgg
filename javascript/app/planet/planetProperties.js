@@ -24,20 +24,20 @@ define(["three", "planet/heightmapGenerator", "resources", "utils/settings", "co
 
         this.noiseFrequency = null;
 
+        //copy fields from config to this object
         settingsUtils.update(this, planetConfig.properties);
         settingsUtils.update(this, planetConfig);
-
-
-        this.uniforms = parseUniforms(this.uniforms || {});
 
         initialize(this);
 
 
         function initialize(properties) {
 
+            properties.uniforms = parseUniforms(properties.uniforms || {});
+
             properties.heightmapGenerator = heightmapGenerator.create(
 
-                2 * properties.chunkSegments,
+                2 * properties.chunkSegments + 1,
                 properties
 
             );
@@ -46,7 +46,7 @@ define(["three", "planet/heightmapGenerator", "resources", "utils/settings", "co
 
                 vertexShader: properties.planetVertex,
                 fragmentShader: properties.planetFragment,
-                uniforms: THREE.UniformsUtils.clone( properties.uniforms )
+                uniforms: properties.uniforms
 
             });
 
@@ -58,8 +58,8 @@ define(["three", "planet/heightmapGenerator", "resources", "utils/settings", "co
 
                 if(uniforms[key].type === "t") {
 
-                    //var path = toAbsolutePath(uniforms[key].value);
-                    //uniforms[key].value = resources.getTexture(path);
+                    var path = "data/planets/" + name + "/" + uniforms[key].value;
+                    uniforms[key].value = resources.getTexture(path);
 
                 }
 

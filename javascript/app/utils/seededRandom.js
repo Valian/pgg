@@ -1,24 +1,24 @@
 define(['seedrandom'], function(seedrandom) {
 
 	function SeededRandom(seed) {
-
 		this.seed = seed;
 		this.random = seedrandom(this.seed.toString());
+		this.nextRandomFloatFromRange = nextRandomFloatFromRange;
+		this.nextRandomIntFromRange = nextRandomIntFromRange;
+		this.randomArrayElement = randomArrayElement;
 
-		this.nextRandomFloatFromRange = function(from, to) {
+		function nextRandomFloatFromRange(from, to) {
 			return this.random() * (to - from) + from;
 		};
 
-		this.nextRandomIntFromRange = function(from, to) {
+		function nextRandomIntFromRange(from, to) {
 			return Math.floor(this.random() * (to - from) + from);
 		};
 
-		this.randomArrayElement = function(array) {
+		function randomArrayElement(array) {
 			return array[this.nextRandomIntFromRange(0, array.length)]
 		};
 	}
 
-	return {
-		new: function(seed) { return new SeededRandom(seed); }
-	};
+	return SeededRandom;
 });

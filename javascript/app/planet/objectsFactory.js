@@ -8,7 +8,7 @@ define(['seededRandom', 'planet/planetTypes', 'planet/planet'],
 				planetRadius: sr.nextRandomFloatFromRange(planetType.planetRadiusMin,
 					planetType.planetRadiusMax),
 				planetSurface: sr.nextRandomFloatFromRange(planetType.planetSurfaceMin,
-					planetType.planetSurfaceMax),
+					planetType.planetSurfaceMax)`,
 				material: planetType.material.clone()
 			};
 

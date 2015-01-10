@@ -4,10 +4,11 @@
         "max": 12000
     },
     "planetSurface": {
-        "min": 300,
+        "min": 2000,
         "max": 5000
     },
-    "lodMaxDetailLevel": 12,
+    "lodMaxDetailLevel": 8,
+    "chunkSegments": 10,
     "noiseMultipliers": [
         [0.5, 1],
         [0.25, 2],

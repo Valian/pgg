@@ -22,9 +22,9 @@ class JsonFileExtractor(TextFileExtractor):
 
 class DataLoader(object):
     extractors = {
-        'vert': TextFileExtractor,
-        'frag': TextFileExtractor,
-        'json': JsonFileExtractor,
+        'vert': TextFileExtractor(),
+        'frag': TextFileExtractor(),
+        'json': JsonFileExtractor(),
     }
 
     def __init__(self, directory):
@@ -32,9 +32,9 @@ class DataLoader(object):
 
     def get_extractor_for_extension(self, extension):
         if extension not in self.extractors:
-            return None;
+            return None
 
-        return self.extractors[extension]()
+        return self.extractors[extension]
 
     def load_data_from_directory(self, directory):
         data = {}

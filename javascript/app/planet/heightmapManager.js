@@ -1,6 +1,6 @@
-define(function() {
+define(["config"], function(config) {
 
-    var maxUnusedTextureCount = 60;
+    var genConfig = config.config.heightmapGenerator;
     var data = {};
 
     return {
@@ -22,7 +22,11 @@ define(function() {
         var texName = toTextureName(parameters);
         var renderedTex = genData.unused[texName];
 
-        if(!renderedTex) return addToQueue(genData, parameters);
+        if(!renderedTex) {
+
+            return addToQueue(genData, parameters);
+
+        }
 
         genData.unusedCount--;
         genData.used[texName] = renderedTex;
@@ -40,7 +44,8 @@ define(function() {
             used: {},
             unused: {},
             toRender: [],
-            unusedCount: 0
+            unusedCount: 0,
+            lastQueryTime: undefined,
 
         };
 
@@ -56,6 +61,7 @@ define(function() {
         };
 
         genData.toRender.push(renderData);
+
         return renderData.renderTarget;
 
     }
@@ -65,11 +71,11 @@ define(function() {
         for(var key in data) {
 
             var genData = data[key];
+            var waitingToRender = genData.toRender.length;
 
-            if( genData.toRender.length > 0 ) {
+            if(waitingToRender > 0) {
 
                 var generator = genData.generator;
-
                 generator.generateTextures( genData.toRender );
 
                 for(var i=0; i<genData.toRender.length; i++) {
@@ -98,7 +104,7 @@ define(function() {
 
             var tex = genData.used[texName];
 
-            if(genData.unusedCount < maxUnusedTextureCount) {
+            if(genData.unusedCount < genConfig.maxUnusedTextureCount) {
 
                 genData.unusedCount++;
                 genData.unused[texName] = tex;

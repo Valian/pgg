@@ -27,7 +27,7 @@ define(function (require) {
     function run() {
 
         var clock = new THREE.Clock();
-        planetManager.generatePlanets();
+        //planetManager.generatePlanets();
 
         function render() {
 

@@ -1,3 +1,4 @@
 {
-    "generatorParallelity": 80
+    "generatorParallelity": 80,
+    "maxUnusedTextureCount": 60
 }

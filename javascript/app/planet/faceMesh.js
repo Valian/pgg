@@ -20,85 +20,73 @@ define(["three"], function(THREE){
 
         var geometry = new THREE.PlaneBufferGeometry(size, size, segments, segments);
 
-        rotateGeometry(geometry, rotation);
-        moveGeometry(geometry, position);
-        computeGeometryBoundingBox(geometry, planetRadius, surfaceHeight);
+        moveGeometry(geometry);
 
-        if(number >= 0) {
+        this.corners = createCorners(geometry);
+        this.originalBoundingBox = computeGeometryBoundingBox(this.corners);
 
-            setUV(geometry, number);
-
-        }
+        setUV(geometry, number);
 
         THREE.Mesh.call(this, geometry, material);
-
-        this.boudingBox = null;
-
         this.frustumCulled = false;
 
-        function moveGeometry(geometry, translateVector) {
+        function moveGeometry(geometry) {
 
-            var positionAttr = geometry.attributes.position;
-            var array = positionAttr.array;
+            var mat = new THREE.Matrix4();
+            mat.makeRotationFromEuler(rotation);
+            mat.setPosition(position);
 
-            for (var i = 0; i < array.length; i++) {
-
-                array[i] += translateVector.getComponent(i % 3);
-
-            }
-
-        }
-
-        function rotateGeometry(geometry, rotationVector) {
-
-            var positionAttr = geometry.attributes.position;
-            var array = positionAttr.array;
             var vec = new THREE.Vector3();
-            var quaternion = new THREE.Quaternion();
-            quaternion.setFromEuler(rotationVector);
 
-            for (var i = 0; i < array.length / 3; i++) {
+            var attr = geometry.attributes.position;
+            var len = attr.length;
 
-                vec.set(array[3 * i], array[3 * i + 1], array[3 * i + 2]);
-                vec.applyQuaternion(quaternion);
+            for (var i = 0; i < len / 3; i++) {
 
-                array[3 * i] = vec.x;
-                array[3 * i + 1] = vec.y;
-                array[3 * i + 2] = vec.z;
+                //array[i] += translateVector.getComponent(i % 3);
+                vec.set(
+
+                    attr.array[3 * i],
+                    attr.array[3 * i + 1],
+                    attr.array[3 * i + 2]
+
+                );
+
+                vec.applyMatrix4(mat);
+
+                attr.setXYZ(i, vec.x, vec.y, vec.z);
 
             }
 
         }
 
-        function computeGeometryBoundingBox(geometry, planetRadius, surfaceHeight) {
+        function computeGeometryBoundingBox(corners) {
 
-            var positions = geometry.attributes.position.array;
             var vector = new THREE.Vector3();
+            var box = new THREE.Box3();
 
-            geometry.boundingBox = new THREE.Box3();
+            for (var i = 0; i < corners.length; i += 1) {
 
-            if (positions) {
+                vector.copy(corners[i]);
+                vector.normalize().multiplyScalar(planetRadius);
+                box.expandByPoint(vector);
 
-                for (var i = 0, il = positions.length * 3; i < il; i += 3) {
-
-                    vector.set(positions[i], positions[i + 1], positions[i + 2]);
-                    vector.normalize().multiplyScalar(planetRadius);
-                    geometry.boundingBox.expandByPoint(vector);
-
-                    vector.normalize().multiplyScalar(planetRadius + surfaceHeight);
-                    geometry.boundingBox.expandByPoint(vector);
-
-                }
+                vector.multiplyScalar((planetRadius + surfaceHeight) / planetRadius);
+                box.expandByPoint(vector);
 
             }
+
+            return box;
 
         }
 
         function setUV(geometry, number) {
 
+            if(number < 0 ) return;
+
             //number from 0 to 3, treated as number of part of the chunk
             var uvs = geometry.attributes.uv.array;
-            var startingPosition = new THREE.Vector2( number % 2, 1 - Math.floor(number / 2));
+            var startingPosition = new THREE.Vector2(number % 2, 1 - Math.floor(number / 2));
             startingPosition.multiplyScalar(0.5);
 
             for (var i = 0, il = uvs.length; i < il; i += 2) {
@@ -107,6 +95,22 @@ define(["three"], function(THREE){
                 uvs[i + 1] = uvs[i + 1] * 0.5 + startingPosition.y;
 
             }
+
+        }
+
+        function createCorners(geometry) {
+
+            var vert = geometry.attributes.position.array;
+            var vLen = vert.length;
+
+            return [
+
+                new THREE.Vector3(vert[0], vert[1], vert[2]),
+                new THREE.Vector3(vert[3 * segments], vert[3 * segments + 1], vert[3 * segments + 2]),
+                new THREE.Vector3(vert[vLen - 3 * segments - 3], vert[vLen - 3 * segments - 2], vert[vLen - 3 * segments - 1]),
+                new THREE.Vector3(vert[vLen - 3], vert[vLen - 2], vert[vLen - 1]),
+
+            ];
 
         }
 
@@ -120,7 +124,6 @@ define(["three"], function(THREE){
 
         }
 
-
         this.geometry.dispose();
         this.material.dispose();
 
@@ -130,11 +133,11 @@ define(["three"], function(THREE){
 
         if (!this.boundingBox) {
 
-            this.boundingBox = this.geometry.boundingBox.clone();
+            this.boundingBox = this.originalBoundingBox.clone();
 
         } else {
 
-            this.boundingBox.copy(this.geometry.boundingBox);
+            this.boundingBox.copy(this.originalBoundingBox);
 
         }
 

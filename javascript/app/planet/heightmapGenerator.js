@@ -30,6 +30,7 @@ define(["three", "renderer", "resources", "config", "scene"],
         function generateTextures(parametersArray) {
 
             var paramCopy = parametersArray.slice();
+            var clock = new THREE.Clock();
 
             do {
 
@@ -37,11 +38,16 @@ define(["three", "renderer", "resources", "config", "scene"],
 
                 var count = part.length;
 
+                console.log(count);
+                clock.getDelta();
+
                 var sourceTex = createRenderTarget(size * this.octaves, size * count);
                 this.firstPass.makePass(count, part, sourceTex);
                 this.secondPass.makePass(count, part, sourceTex);
 
                 sourceTex.dispose();
+
+                console.log(clock.getDelta());
 
             } while (paramCopy.length > 0);
 

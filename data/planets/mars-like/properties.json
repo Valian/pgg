@@ -1,0 +1,10 @@
+{
+	"noiseFrequency": 2,
+	"planetSurface": {
+        "min": 300,
+        "max": 2000
+    },
+	"uniforms": {
+        "surfaceTex": { "type": "t", "value": "mars.png" }
+    }
+}

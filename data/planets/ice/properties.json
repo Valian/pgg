@@ -1,3 +1,6 @@
 {
-
+	"noiseFrequency": 2,
+	"uniforms": {
+        "surfaceTex": { "type": "t", "value": "ice.png" }
+    }
 }

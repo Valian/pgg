@@ -1,6 +1,6 @@
 {
-    "chunkSegments": 30,
-    "lodMaxDetailLevel": 8,
+    "chunkSegments": 100,
+    "lodMaxDetailLevel": 6,
     "noiseFrequency": 1,
     "planetRadius": {
         "min": 10000,

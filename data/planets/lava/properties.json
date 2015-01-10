@@ -1,4 +1,5 @@
 {
+	"noiseFrequency": 1.8,
     "uniforms": {
         "surfaceTex": { "type": "t", "value": "lava.png" }
     }

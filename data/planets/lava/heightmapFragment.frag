@@ -24,14 +24,11 @@ void main()
     
     for(int i = 0; i < 4; i++)
     {
-    	if(color[i] > 0.55 || color[i] < 0.45)
-    	{
-    		color[i] = 1.0;
-    	}
-    	else if(color[i] < 0.52 && color[i] > 0.48) 
-    	{
-    		//color[i] = 0.0;
-    	}
+    	bool transform = color[i] < 0.5;
+    	color[i] = float(transform) * (1.0 - color[i]) + color[i] * float(!transform);
+    	
+    	transform = color[i] > 0.55;
+    	color[i] = float(transform) * 1.0 + float(!transform) * color[i];
     }
 
     gl_FragColor = color;

@@ -2,7 +2,6 @@ import os
 import json
 from flask import Flask, render_template, Response
 from loaders import SimpleDataLoader, ObjectsDefinitionsLoader
-from utils import nocache
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,16 +24,20 @@ app = Flask(__name__, static_folder=BASE_DIR, static_url_path='', template_folde
 
 
 @app.route('/')
-@nocache
 def index():
     return render_template('index.html')
 
 
 @app.route('/data/load/')
-@nocache
 def load_content():
     content = {name: loader.load() for name, loader in LOADERS}
     return Response(json.dumps(content), content_type='application/json')
+
+
+@app.after_request
+def set_cache_headers(response):
+    response.cache_control.no_cache = True
+    return response
 
 
 if __name__ == '__main__':

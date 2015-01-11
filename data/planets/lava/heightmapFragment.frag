@@ -27,8 +27,8 @@ void main()
     	bool transform = color[i] < 0.5;
     	color[i] = float(transform) * (1.0 - color[i]) + color[i] * float(!transform);
     	
-    	transform = color[i] > 0.55;
-    	color[i] = float(transform) * 1.0 + float(!transform) * color[i];
+    	transform = color[i] > 0.52;
+    	color[i] = float(transform) * (color[i] * 6.0 - 2.60) + float(!transform) * color[i];
     }
 
     gl_FragColor = color;

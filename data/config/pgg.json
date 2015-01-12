@@ -1,8 +1,8 @@
 {
-    "debugPlanetName": "lava",
+    "debugPlanetName": "debugPlanet",
     "notIncludedPlanets": [
         "template(forCopying)"
     ],
-    "debug": true,
+    "debug": false,
     "wireframe": false
 }

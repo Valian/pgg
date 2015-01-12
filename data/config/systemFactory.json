@@ -1,7 +1,7 @@
 {
     "numberOfPlanets": {
-        "min": 5,
-        "max": 10
+        "min": 100,
+        "max": 101
     },
     "orbitRadiusDelta": {
         "min": 30000,

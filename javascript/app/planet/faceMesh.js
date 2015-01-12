@@ -25,7 +25,7 @@ define(["three"], function(THREE){
         this.corners = createCorners(geometry);
         this.originalBoundingBox = computeGeometryBoundingBox(this.corners);
 
-        setUV(geometry, number);
+        setUV(geometry);
 
         THREE.Mesh.call(this, geometry, material);
         this.frustumCulled = false;
@@ -80,7 +80,8 @@ define(["three"], function(THREE){
 
         }
 
-        function setUV(geometry, number) {
+        /*
+        function setUV(geometry) {
 
             if(number < 0 ) return;
 
@@ -97,6 +98,33 @@ define(["three"], function(THREE){
             }
 
         }
+        */
+
+        function setUV(geometry) {
+
+            if(number < 0 ) return;
+
+            //number from 0 to 3, treated as number of part of the chunk
+            var uvs = geometry.attributes.uv.array;
+            var translation = new THREE.Vector3(0.5, 0.5);
+            var startingPosition = new THREE.Vector2(number % 2, 1 - Math.floor(number / 2));
+            startingPosition.multiplyScalar(0.5).sub(translation);
+
+            var range = 1 - 1 / (2 * segments);
+            var vec = new THREE.Vector2();
+
+            for (var i = 0, il = uvs.length; i < il; i += 2) {
+
+                vec.set(uvs[i] * 0.5, uvs[i + 1] * 0.5);
+                vec.add(startingPosition).multiplyScalar(range).add(translation);
+
+                uvs[i] = vec.x;
+                uvs[i + 1] = vec.y;
+
+            }
+
+        }
+
 
         function createCorners(geometry) {
 

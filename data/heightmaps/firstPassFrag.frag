@@ -79,10 +79,27 @@ float snoise(vec3 v)
                                 dot(p2,x2), dot(p3,x3) ) );
 }
 
+vec4 pack_value(const in float value)
+{
+    const vec4 bit_shift = vec4(256.0*256.0*256.0, 256.0*256.0, 256.0, 1.0);
+    const vec4 bit_mask  = vec4(0.0, 1.0/256.0, 1.0/256.0, 1.0/256.0);
+    vec4 res = fract(value * bit_shift);
+    res -= res.xxyz * bit_mask;
+    return res;
+}
+
+float unpack_value(const in vec4 rgba_value)
+{
+    const vec4 bit_shift = vec4(1.0/(256.0*256.0*256.0), 1.0/(256.0*256.0), 1.0/256.0, 1.0);
+    float depth = dot(rgba_value, bit_shift);
+    return depth;
+}
+
 varying vec3 varyingPosition;
 varying float mult;
 varying float seed;
 uniform float noiseFrequency;
+
 
 void main()
 {
@@ -90,5 +107,5 @@ void main()
 
     float color = snoise(v * mult + seed) * 0.5 + 0.5;
 
-    gl_FragColor = vec4(color, color, color, 1.0);
+    gl_FragColor = pack_value(color);
 }

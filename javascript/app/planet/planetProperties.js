@@ -46,7 +46,8 @@ define(["three", "planet/heightmapGenerator", "resources", "utils/settings", "co
 
                 vertexShader: properties.planetVertex,
                 fragmentShader: properties.planetFragment,
-                uniforms: properties.uniforms
+                uniforms: properties.uniforms,
+                wireframe: config.config.pgg.wireframe,
 
             });
 

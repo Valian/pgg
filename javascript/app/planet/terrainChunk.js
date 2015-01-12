@@ -45,8 +45,11 @@ define( function (require) {
         this.mesh = faceMesh.create(
 
             size, planet.planetType.chunkSegments,
-            this.material, position, rotation,
-            number, planet.planetRadius,
+            this.material,
+            position,
+            rotation,
+            number,
+            planet.planetRadius,
             planet.surfaceHeight
 
         );

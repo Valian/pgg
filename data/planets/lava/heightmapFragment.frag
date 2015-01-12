@@ -7,29 +7,50 @@ uniform float row;
 
 varying vec2 vUV;
 
-vec4 snoise(int level)
+vec4 pack_value(const in float value)
 {
-    vec2 coords = vec2((vUV.x + float(level)) / FOCTAVES, (vUV.y + row) / verticalCount);
-    return texture2D(sourceTexture, coords);
+    const vec4 bit_shift = vec4(256.0*256.0*256.0, 256.0*256.0, 256.0, 1.0);
+    const vec4 bit_mask  = vec4(0.0, 1.0/256.0, 1.0/256.0, 1.0/256.0);
+    vec4 res = fract(value * bit_shift);
+    res -= res.xxyz * bit_mask;
+    return res;
 }
 
-void main()
+float unpack_value(const in vec4 rgba_value)
 {
-    vec4 color = vec4(0.0, 0.0, 0.0, 0.0);
+    const vec4 bit_shift = vec4(1.0/(256.0*256.0*256.0), 1.0/(256.0*256.0), 1.0/256.0, 1.0);
+    float depth = dot(rgba_value, bit_shift);
+    return depth;
+}
+
+float snoise(int level)
+{
+    vec2 coords = vec2((vUV.x + float(level)) / FOCTAVES, (vUV.y + row) / verticalCount);
+    return unpack_value(texture2D(sourceTexture, coords));
+}
+
+float calculateColor()
+{
+    float color = 0.0;
 
     for(int i = 0; i < OCTAVES; i++)
     {
         color += multipliers[i] * snoise(i);
     }
-    
-    for(int i = 0; i < 4; i++)
-    {
-    	bool transform = color[i] < 0.5;
-    	color[i] = float(transform) * (1.0 - color[i]) + color[i] * float(!transform);
-    	
-    	transform = color[i] > 0.52;
-    	color[i] = float(transform) * (color[i] * 6.0 - 2.60) + float(!transform) * color[i];
-    }
 
-    gl_FragColor = color;
+    return color;
+}
+
+void main()
+{
+    float color = calculateColor();
+
+    bool transform = color < 0.5;
+    color = float(transform) * (1.0 - color) + color * float(!transform);
+
+    transform = color > 0.52;
+    color = float(transform) * (color * 6.0 - 2.60) + float(!transform) * color;
+    color = min(color, 0.9999);
+
+    gl_FragColor = pack_value(color);
 }

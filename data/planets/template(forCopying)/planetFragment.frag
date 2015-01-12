@@ -1,4 +1,3 @@
-varying vec2 vUv;
 varying float surfaceLevel;
 
 void main()

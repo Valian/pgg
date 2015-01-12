@@ -61,9 +61,9 @@ define(["three", "renderer", "resources", "config", "scene"],
             var settings = {
 
                 minFilter: THREE.LinearFilter,
-                magFilter: THREE.LinearFilter,
+                magFilter: THREE.NearestFilter,
                 generateMipmaps: false,
-                format: THREE.RGBFormat,
+                format: THREE.RGBAFormat,
 
             };
 

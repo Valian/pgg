@@ -1,5 +1,5 @@
-define(["three", "renderer", "resources", "config", "scene"],
-       function(THREE, renderer, resources, config, scene) {
+define(["three", "renderer", "resources", "config"],
+       function(THREE, renderer, resources, config) {
 
 
     return {

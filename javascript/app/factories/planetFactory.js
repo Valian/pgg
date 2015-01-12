@@ -1,18 +1,19 @@
 define(['utils/seededRandom', 'planet/planetTypes', 'planet/planet', 'seedrandom'],
 	function(SeededRandom, planetTypes, Planet, seedrandom) {
 
-	function PlanetFactory() {
+	function PlanetFactory(factorySeed) {
+		this.factorySeed = factorySeed;
 		this.createPlanet = createPlanet;
 		this.generateRandomPlanetAttributes = generateRandomPlanetAttributes;
 
 	    function createPlanet(seed) {
-	    	var seededRandom = new SeededRandom(seed);
+	    	var seededRandom = new SeededRandom(this.factorySeed + seed);
 
 	        var planetType = seededRandom.randomArrayElement(planetTypes);
 	        var attributes = this.generateRandomPlanetAttributes(planetType, seededRandom);
 
-	        return Planet.create(attributes.material, attributes.planetRadius,
-	                                attributes.planetSurface, planetType, seed);
+	        return new Planet(attributes.material, attributes.planetRadius,
+	        	attributes.planetSurface, planetType, seed);
 	    }
 
 	    function generateRandomPlanetAttributes(planetType, seededRandom) {

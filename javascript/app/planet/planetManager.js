@@ -1,10 +1,9 @@
-define(["three", "scene", "planet/planetTypes", "seedrandom", "planet/planet",
+define(["three", "planet/planetTypes", "seedrandom", "planet/planet",
     "config", 'containers/planetContainer', 'factories/planetFactory'],
-       function(THREE, scene, planetTypes, seedrandom, planet, config, PlanetContainer, PlanetFactory) {
+       function(THREE, planetTypes, seedrandom, planet, config, PlanetContainer, PlanetFactory) {
 
 
     var planetContainer = new PlanetContainer();
-    scene.add(planetContainer.planets);
 
     return {
         generatePlanets: generatePlanets,

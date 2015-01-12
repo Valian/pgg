@@ -1,15 +1,10 @@
-require( ['detector', 'app', 'container'], function ( Detector, app, container ) {
+require(['detector', 'app'], function(Detector, App) {
 
-    if ( ! Detector.webgl ) {
-
+    if (!Detector.webgl) {
         Detector.addGetWebGLMessage();
-
     }
     else {
-
-        app.run();
-        container.innerHTML = "";
-
+    	new App().run();
+        document.getElementById('threejs-container').innerHTML = "";
     }
-
-} );
+});

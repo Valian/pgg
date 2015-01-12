@@ -2,16 +2,6 @@ define(["three", "planet/terrainChunk"], function(THREE, terrainChunk) {
 
     Planet.prototype = Object.create(THREE.Object3D.prototype);
 
-    return {
-
-        create: function(material, planetRadius, surfaceHeight, planetType, seed) {
-
-            return new Planet(material, planetRadius, surfaceHeight, planetType, seed);
-
-        }
-
-    };
-
     function Planet(material, planetRadius, surfaceHeight, planetType, seed) {
 
         THREE.Object3D.call(this);
@@ -60,5 +50,6 @@ define(["three", "planet/terrainChunk"], function(THREE, terrainChunk) {
         }
 
     };
-
+    
+    return Planet;
 });

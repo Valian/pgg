@@ -5,10 +5,8 @@ define([], function() {
 	};
 
 	function sphericalToCartesian(r, theta, phi) {
-		return {
-			x: r * Math.sin(theta) * Math.cos(phi),
-			y: r * Math.sin(theta) * Math.sin(phi),
-			z: r * Math.cos(theta)
-		}
+		return [r * Math.sin(theta) * Math.cos(phi),
+				r * Math.sin(theta) * Math.sin(phi),
+				r * Math.cos(theta)]
 	}
 });

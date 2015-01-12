@@ -1,50 +1,50 @@
-define(function (require) {
+define(['three', 'camera', 'controls', 'renderer', 'stats', 'planet/planetManager',
+    'planet/heightmapManager', 'containers/planetContainer', 'factories/planetFactory',
+    'seedrandom', 'system/systemFactory'], function (THREE, camera, controls, renderer, stats, planetManager,
+        heightmapManager, PlanetContainer, PlanetFactory, seedrandom, SystemFactory) {
 
-    var THREE = require("three"),
-        camera = require("camera"),
-        controls = require("controls"),
-        renderer = require("renderer"),
-        globalScene = require("scene"),
-        stats = require("stats"),
-        planetManager = require("planet/planetManager"),
-        heightmapManager = require("planet/heightmapManager"),
-        PlanetContainer = require('containers/planetContainer'),
-        PlanetFactory = require('factories/planetFactory'),
-        seedrandom = require('seedrandom');
+    function App() {
+        this.clock = new THREE.Clock();
+        this.mainScene = new THREE.Scene();
+        this.setup = setup;
+        this.run = run;
+        this.onFrame = onFrame;
+        this.update = update;
 
-    var planetContainer = new PlanetContainer();
-    var planetFactory = new PlanetFactory();
-    var randomGen = seedrandom(123);
+        this.setup();
 
-    var newPlanet = planetFactory.createPlanet(randomGen().toString());
-    newPlanet.position.z -= 60000;
-    newPlanet.position.x += 20000;
+        function setup() {
+            var systemFactory = new SystemFactory(Math.random());
+            var system = systemFactory.createSystem(51512);
 
-    planetContainer.addPlanet(newPlanet);
-    var scene = new THREE.Scene();
-    scene.add(planetContainer.planets);
+            this.planetContainer = new PlanetContainer();
 
-    function run() {
+            for(var i=0; i<system.planets.length; i++) {
+                this.planetContainer.addPlanet(system.planets[i]);
+            }
+            this.mainScene.add(this.planetContainer.planets);
+        }
 
-        var clock = new THREE.Clock();
-        //planetManager.generatePlanets();
+        function run() {
+            this.onFrame();
+        }
 
-        function render() {
-
-            var delta = clock.getDelta();
-            requestAnimationFrame(render);
-
-            planetContainer.updateAll();
+        function update() {
+            var delta = this.clock.getDelta();
+            this.planetContainer.updateAll();
             heightmapManager.update();
             controls.update(delta);
             camera.updateFrustum();
             stats.update(renderer);
-            renderer.render(scene, camera);
         }
 
-        render();
-
+        function onFrame() {
+            var that = this;
+            requestAnimationFrame(function() { that.onFrame(); });
+            this.update();
+            renderer.render(this.mainScene, camera);
+        }
     }
 
-    return {run: run};
+    return App;
 });

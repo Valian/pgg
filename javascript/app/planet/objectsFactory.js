@@ -24,7 +24,7 @@ define(['seededRandom', 'planet/planetTypes', 'planet/planet'],
 			var planetType = sr.randomArrayElement(planetTypes.types);
 			var planetAttributes = this.randomPlanetAttributes(sr, planetType);
 
-			return Planet.create(planetAttributes.material, planetAttributes.planetRadius,
+			return new Planet(planetAttributes.material, planetAttributes.planetRadius,
 				planetAttributes.planetSurface, planetType, seed);
 		};
 

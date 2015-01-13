@@ -1,9 +1,17 @@
 define(['three', 'camera', 'controls', 'renderer', 'stats', 'planet/planetManager',
     'planet/heightmapManager', 'containers/planetContainer', 'factories/planetFactory',
-    'seedrandom', 'system/systemFactory', 'config'], function (THREE, camera, controls, renderer, stats, planetManager,
-        heightmapManager, PlanetContainer, PlanetFactory, seedrandom, SystemFactory, config) {
+    'seedrandom', 'system/systemFactory', 'config', 'galaxy/galaxyFactory'],
+    function (THREE, camera, controls, renderer, stats, planetManager,
+        heightmapManager, PlanetContainer, PlanetFactory, seedrandom,
+        SystemFactory, config, GalaxyFactory) {
 
     var pggConfig = config.config.pgg;
+
+    var before = new Date();
+    var galaxyFactory = new GalaxyFactory(41242);
+    var systemArray = galaxyFactory.createGalaxyCube(4142, [0, 0, 0], 20);
+    var after = new Date();
+    alert(before.toString() + "\n" + after.toString());
 
     function App() {
 

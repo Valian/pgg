@@ -98,14 +98,11 @@ float unpack_value(const in vec4 rgba_value)
 varying vec3 varyingPosition;
 varying float mult;
 varying float seed;
-uniform float noiseFrequency;
 
 
 void main()
 {
-    vec3 v = noiseFrequency * normalize(varyingPosition);
-
-    float color = snoise(v * mult + seed) * 0.5 + 0.5;
+    float color = snoise(normalize(varyingPosition) * mult + seed) * 0.5 + 0.5;
 
     gl_FragColor = pack_value(color);
 }

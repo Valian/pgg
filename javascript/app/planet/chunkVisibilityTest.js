@@ -7,17 +7,17 @@ define(["camera"], function(camera) {
     };
 
 
-    function visibilityTest(chunk, actualLevel) {
+    function visibilityTest(chunk, planetPosition, actualLevel) {
 
-        var frontSideVisible = isFrontSideVisible(chunk, actualLevel);
+        var frontSideVisible = isFrontSideVisible(chunk, planetPosition, actualLevel);
         var inCameraFrustum = frontSideVisible && isInCameraFrustum(chunk);
         return frontSideVisible && inCameraFrustum;
 
     }
 
-    function isFrontSideVisible(chunk, actualLevel) {
+    function isFrontSideVisible(chunk, planetPosition, actualLevel) {
 
-        var absolutePosition = chunk.relativePosition.clone().add(chunk.planet.position);
+        var absolutePosition = chunk.relativePosition.clone().add(planetPosition);
         var dir = camera.position.clone().sub(absolutePosition).normalize();
         var dot = chunk.normal.dot(dir);
 
@@ -34,7 +34,7 @@ define(["camera"], function(camera) {
 
         if (!chunk.mesh.boundingBox) {
 
-            chunk.mesh.computeBoundingBox(chunk.planet.planetRadius);
+            chunk.mesh.computeBoundingBox();
 
         }
 

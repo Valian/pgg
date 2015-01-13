@@ -2,7 +2,7 @@ define( function (require) {
 
     var THREE = require("three"),
         camera = require("camera"),
-        faceMesh = require("planet/faceMesh"),
+        FaceMesh = require("planet/faceMesh"),
         visibilityTest = require("planet/chunkVisibilityTest"),
         LOD = require("planet/lodSystem"),
         heightmapManager = require("planet/heightmapManager");
@@ -18,43 +18,34 @@ define( function (require) {
 
     };
 
-    return {
+    return TerrainChunk;
 
-        create: function(planet, size, position, rotation, number) {
-
-            return new TerrainChunk(planet, size, position, rotation, number);
-
-        },
-
-    };
-
-    function TerrainChunk(planet, size, position, rotation, number) {
+    function TerrainChunk(properties, size, position, rotation, number) {
 
         this.size = size;
-        this.chunks = [];
-        this.planet = planet;
-        this.material = planet.material.clone();
+        this.properties = properties;
+        this.material = properties.material.clone();
         this.visibleByCamera = true;
         this.isDivided = false;
+
+        this.chunks = [];
+        this.chunkSegments = properties.chunkSegments;
 
         this.rotation = rotation;
         this.relativePosition = position.clone();
         this.normal = position.clone().normalize();
-        this.positionOnSphere = this.normal.clone().multiplyScalar(planet.planetRadius);
+        this.positionOnSphere = this.normal.clone().multiplyScalar(properties.planetRadius);
 
-        this.mesh = faceMesh.create(
+        this.mesh = new FaceMesh(
 
-            size, planet.planetType.chunkSegments,
+            size,
             this.material,
             position,
             rotation,
             number,
-            planet.planetRadius,
-            planet.surfaceHeight
+            properties
 
         );
-
-        this.planet.add( this.mesh );
 
         this.heightmapParams = createHeightmapParams( this.mesh.corners );
 
@@ -67,13 +58,13 @@ define( function (require) {
 
         function createHeightmapParams(corners) {
 
-            var heightmapGen = planet.planetType.heightmapGenerator;
+            var heightmapGen = properties.heightmapGenerator;
 
             return {
 
                 generator: heightmapGen,
                 corners: corners,
-                seed: planet.seed * 1000,
+                properties : properties
 
             };
 
@@ -86,7 +77,6 @@ define( function (require) {
         if (this.isDivided) return;
 
         var heightmap = this.generateHeightmap();
-        var segments = this.planet.planetType.chunkSegments;
         var position = this.relativePosition;
 
         for (var i = 0; i < this.mesh.corners.length; i++) {
@@ -98,7 +88,7 @@ define( function (require) {
 
             var chunk = new TerrainChunk(
 
-                this.planet,
+                this.properties,
                 this.size / 2,
                 newCenter,
                 this.rotation,
@@ -109,7 +99,7 @@ define( function (require) {
             chunk.setHeightmap(heightmap);
 
             this.chunks.push(chunk);
-            this.planet.add(chunk.mesh);
+            this.mesh.parent.add(chunk.mesh);
 
         }
 
@@ -123,10 +113,8 @@ define( function (require) {
 
         for (var i = 0; i < this.chunks.length; i++) {
 
-            var chunk = this.chunks[i];
-
-            chunk.merge();
-            chunk.mesh.disposeMesh();
+            this.chunks[i].merge();
+            this.chunks[i].mesh.disposeMesh();
 
         }
 
@@ -140,7 +128,9 @@ define( function (require) {
     function generateHeightmap() {
 
         return heightmapManager.getTexture(
+
             this.heightmapParams
+
         );
 
     }
@@ -148,25 +138,27 @@ define( function (require) {
     function setHeightmap(heightmap) {
 
         this.material.uniforms.heightmapTex = {
+
             type: "t",
             value: heightmap
+
         };
 
     }
 
-    function update(maxDetailLevel, actualLevel) {
+    function update(planet, maxDetailLevel, actualLevel) {
 
         actualLevel = actualLevel || 0;
 
-        LOD.update(this, actualLevel, maxDetailLevel);
+        LOD.update(this, planet.position, actualLevel, maxDetailLevel);
 
-        this.visibleByCamera = visibilityTest.test(this, actualLevel);
+        this.visibleByCamera = visibilityTest.test(this, planet.position, actualLevel);
         this.mesh.visible = this.visibleByCamera && !this.isDivided;
 
 
         for (var i = 0; i < this.chunks.length; i++) {
 
-            this.chunks[i].update(maxDetailLevel, actualLevel + 1);
+            this.chunks[i].update(planet, maxDetailLevel, actualLevel + 1);
 
         }
 

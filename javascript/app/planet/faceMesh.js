@@ -1,4 +1,4 @@
-define(["three"], function(THREE){
+define(["three", "planet/planeGeometriesContainer"], function(THREE, container){
 
     FaceMesh.prototype = Object.create(THREE.Mesh.prototype);
 
@@ -6,19 +6,14 @@ define(["three"], function(THREE){
     FaceMesh.prototype.computeBoundingBox = computeBoundingBox;
 
 
-    return {
+    return FaceMesh;
 
-        create: function(size, segments, material, position, rotation, number, planetRadius, surfaceHeight) {
+    function FaceMesh(size, material, position, rotation, number, properties) {
 
-            return new FaceMesh(size, segments, material, position, rotation, number, planetRadius, surfaceHeight);
-
-        }
-
-    };
-
-    function FaceMesh(size, segments, material, position, rotation, number, planetRadius, surfaceHeight) {
-
-        var geometry = new THREE.PlaneBufferGeometry(size, size, segments, segments);
+        var segments = properties.chunkSegments;
+        var planetRadius = properties.planetRadius;
+        var planetSurface = properties.planetSurface;
+        var geometry = container.getPlaneGeometry(size, segments);
 
         moveGeometry(geometry);
 
@@ -28,6 +23,7 @@ define(["three"], function(THREE){
         setUV(geometry);
 
         THREE.Mesh.call(this, geometry, material);
+
         this.frustumCulled = false;
 
         function moveGeometry(geometry) {
@@ -43,7 +39,6 @@ define(["three"], function(THREE){
 
             for (var i = 0; i < len / 3; i++) {
 
-                //array[i] += translateVector.getComponent(i % 3);
                 vec.set(
 
                     attr.array[3 * i],
@@ -71,7 +66,7 @@ define(["three"], function(THREE){
                 vector.normalize().multiplyScalar(planetRadius);
                 box.expandByPoint(vector);
 
-                vector.multiplyScalar((planetRadius + surfaceHeight) / planetRadius);
+                vector.multiplyScalar((planetRadius + planetSurface) / planetRadius);
                 box.expandByPoint(vector);
 
             }
@@ -80,25 +75,6 @@ define(["three"], function(THREE){
 
         }
 
-        /*
-        function setUV(geometry) {
-
-            if(number < 0 ) return;
-
-            //number from 0 to 3, treated as number of part of the chunk
-            var uvs = geometry.attributes.uv.array;
-            var startingPosition = new THREE.Vector2(number % 2, 1 - Math.floor(number / 2));
-            startingPosition.multiplyScalar(0.5);
-
-            for (var i = 0, il = uvs.length; i < il; i += 2) {
-
-                uvs[i] = uvs[i] * 0.5 + startingPosition.x;
-                uvs[i + 1] = uvs[i + 1] * 0.5 + startingPosition.y;
-
-            }
-
-        }
-        */
 
         function setUV(geometry) {
 

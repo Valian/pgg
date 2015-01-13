@@ -1,31 +1,21 @@
 define(["three", "renderer", "resources", "config"],
        function(THREE, renderer, resources, config) {
 
-
-    return {
-
-        create: function(size, properties) {
-
-            return new HeightmapGenerator(size, properties);
-
-        },
-
-    };
+    return HeightmapGenerator;
 
     function HeightmapGenerator(size, properties) {
 
         this.name = properties.name;
         this.size = size;
         this.paralell = config.config.heightmapGenerator.generatorParallelity;
-        this.noiseMultipliers = properties.noiseMultipliers;
-        this.octaves = this.noiseMultipliers ? this.noiseMultipliers.length : 1;
-        this.noiseFrequency = properties.noiseFrequency;
+        this.octaves = properties.noiseMultipliers ? properties.noiseMultipliers.length : 1;
 
         this.firstPass = new FirstPassScene(size, this.paralell, this.octaves, properties);
         this.secondPass = new SecondPassScene(size, this.octaves, properties);
 
         this.generateTextures = generateTextures;
         this.createRenderTarget = createRenderTarget;
+        this.clone = function() { return this; }
 
         function generateTextures(parametersArray) {
 
@@ -116,9 +106,6 @@ define(["three", "renderer", "resources", "config"],
                     multiplier: { type: 'f', value: [] },
                     cornerPosition: { type: '3fv', value: [] }
                 },
-                uniforms: {
-                    noiseFrequency: { type: 'f', value: properties.noiseFrequency },
-                },
                 side: THREE.DoubleSide,
                 vertexShader: config.heightmaps.firstPassVert,
                 fragmentShader: config.heightmaps.firstPassFrag,
@@ -134,7 +121,6 @@ define(["three", "renderer", "resources", "config"],
         function createFirstPassGeometry() {
 
             var segments = size;
-            var noiseMultipliers = properties.noiseMultipliers;
             var verticalCount = paralell;
 
             var planeGeometry = new THREE.BufferGeometry();
@@ -167,19 +153,19 @@ define(["three", "renderer", "resources", "config"],
             planeGeometry.addAttribute( "position", vertices );
 
             var multArray = new Float32Array( vertexes );
-            var multipliers = new THREE.BufferAttribute( multArray, 1 );
+            _this.multipliers = new THREE.BufferAttribute( multArray, 1 );
 
             for(var row=0; row<verticalCount; row++) {
 
                 for(var i = 0; i < octaves * 6; i++) {
 
-                    multipliers.setX(i + row * octaves * 6, noiseMultipliers[Math.floor(i / 6)][1]);
+                    _this.multipliers.setX(0);
 
                 }
 
             }
 
-            planeGeometry.addAttribute( "multiplier", multipliers );
+            planeGeometry.addAttribute( "multiplier", _this.multipliers );
 
             var cornersArray = new Float32Array( vertexes * 4 );
             _this.cornersPositions = new THREE.BufferAttribute( cornersArray, 4 );
@@ -209,9 +195,12 @@ define(["three", "renderer", "resources", "config"],
 
             for(var row = 0; row < count; row++)
             {
+                var params = parametersArray[row].param;
+                var corners = params.corners;
+                var seed = params.properties.seed;
+                var noiseMultipliers = params.properties.noiseMultipliers;
+                var noiseFrequency = params.properties.noiseFrequency;
 
-                var corners = parametersArray[row].param.corners;
-                var seed = parametersArray[row].param.seed;
                 var leftTop = corners[0];
 
                 //rightTop - leftTop;
@@ -245,9 +234,17 @@ define(["three", "renderer", "resources", "config"],
 
                 }
 
+                for(var i = 0; i < octaves * 6; i++) {
+
+                    var freq = noiseMultipliers[Math.floor(i / 6)].frequency * noiseFrequency;
+                    _this.multipliers.setX(i + row * octaves * 6, freq);
+
+                }
+
             }
 
              _this.cornersPositions.needsUpdate = true;
+             _this.multipliers.needsUpdate = true;
 
             function calculateSpherePosition( x, y ) {
 
@@ -278,13 +275,17 @@ define(["three", "renderer", "resources", "config"],
         function makePass(count, parametersArray, sourceTex) {
 
             var uniforms = this.mesh.material.uniforms;
+            var multipliersArray = [];
 
             uniforms.sourceTexture.value = sourceTex;
             uniforms.verticalCount.value = count;
 
             for(var i = 0; i < count; i++) {
 
+                var mult = parametersArray[i].param.properties.noiseMultipliers;
+
                 uniforms.row.value = i;
+                uniforms.multipliers.value = convertToUniform(mult);
 
                 renderer.render(
 
@@ -297,17 +298,24 @@ define(["three", "renderer", "resources", "config"],
 
             }
 
+            function convertToUniform(multipliers) {
+
+                multipliersArray = [];
+
+                for(var j=0; j < multipliers.length; j++) {
+
+                    multipliersArray.push( multipliers[j].weight );
+
+                }
+
+                return multipliersArray;
+
+            }
+
         }
 
 
         function createSecondPassMaterial() {
-
-            var noiseMultipliers = properties.noiseMultipliers;
-            var multipliers = [];
-
-            for(var i = 0; i < noiseMultipliers.length; i++) {
-                multipliers.push(noiseMultipliers[i][0]);
-            }
 
             //TODO - move to planetProperties loading.
             var heightmapFrag = properties.heightmapFragment ?
@@ -319,7 +327,7 @@ define(["three", "renderer", "resources", "config"],
                 uniforms: {
 
                     sourceTexture: { type: 't', value: null },
-                    multipliers: { type: 'fv1', value: multipliers },
+                    multipliers: { type: 'fv1', value: null },
                     verticalCount: { type: 'f', value: 1 },
                     row: { type: 'f', value: 0 },
 

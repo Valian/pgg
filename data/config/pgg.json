@@ -4,5 +4,7 @@
         "template(forCopying)"
     ],
     "debug": false,
+    "random": true,
+    "seed": "test",
     "wireframe": false
 }

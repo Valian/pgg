@@ -1,17 +1,17 @@
-define(["three", "planet/terrainChunk"], function(THREE, terrainChunk) {
+define(["three", "planet/terrainChunk"], function(THREE, TerrainChunk) {
 
     Planet.prototype = Object.create(THREE.Object3D.prototype);
 
-    function Planet(material, planetRadius, surfaceHeight, planetType, seed) {
+    function Planet(planetProperties) {
 
         THREE.Object3D.call(this);
 
-        this.planetRadius = planetRadius;
-        this.surfaceHeight = surfaceHeight;
-        this.material = material;
-        this.seed = seed;
+        this.planetRadius = planetProperties.planetRadius;
+        this.planetSurface = planetProperties.planetSurface;
+        this.seed = planetProperties.seed;
+        this.lodMaxDetailLevel = planetProperties.lodMaxDetailLevel;
 
-        this.planetType = planetType;
+        this.properties = planetProperties;
 
         this.frustumCulled = false;
 
@@ -30,10 +30,20 @@ define(["three", "planet/terrainChunk"], function(THREE, terrainChunk) {
 
         function createChunk(planet, position, rotation) {
 
-            var size = (planet.planetRadius + planet.surfaceHeight / 2)
+            var size = (planet.planetRadius + planet.planetSurface / 2)
                         * (2 / Math.sqrt(3));
-            var chunk = terrainChunk.create(planet, size,
-                position.multiplyScalar(size / 2), rotation, -1);
+
+            var chunk = new TerrainChunk(
+
+                planet.properties,
+                size,
+                position.multiplyScalar(size / 2),
+                rotation,
+                -1
+
+            );
+
+            planet.add(chunk.mesh);
 
             return chunk;
 
@@ -43,13 +53,13 @@ define(["three", "planet/terrainChunk"], function(THREE, terrainChunk) {
 
             for (key in this.chunks) {
 
-                this.chunks[key].update(this.planetType.lodMaxDetailLevel);
+                this.chunks[key].update(this, this.lodMaxDetailLevel);
 
             }
 
         }
 
     };
-    
+
     return Planet;
 });

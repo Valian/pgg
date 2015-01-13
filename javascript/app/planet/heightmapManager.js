@@ -144,7 +144,7 @@ define(["config"], function(config) {
 
         var lt = param.corners[0];
         var lb = param.corners[2];
-        var seed = param.seed;
+        var seed = param.properties.seed;
 
         return vecToStr(lt) + vecToStr(lb) + seed.toFixed(1);
 

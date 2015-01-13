@@ -8,9 +8,9 @@ define(["camera"], function(camera) {
 
     }
 
-    function updateLOD(chunk, actualLevel, maxLevel) {
+    function updateLOD(chunk, planetPosition, actualLevel, maxLevel) {
 
-        position.copy(chunk.planet.position).add(chunk.positionOnSphere);
+        position.copy(planetPosition).add(chunk.positionOnSphere);
         var dist = camera.position.distanceTo(position);
         var desiredLevel = (maxLevel * chunk.size - dist) / chunk.size;
 

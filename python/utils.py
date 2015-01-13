@@ -4,7 +4,7 @@ import os
 def deepupdate(source, destination):
     for k, v in source.items():
         if isinstance(v, dict):
-            if k in destination:
+            if k in destination and isinstance(destination[k], dict):
                 deepupdate(source[k], destination[k])
             else:
                 destination[k] = v

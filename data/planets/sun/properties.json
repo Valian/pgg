@@ -1,0 +1,14 @@
+{
+	"planetRadius": {
+        "min": 25000,
+        "max": 28000
+    },
+    "planetSurface": {
+        "min": 300,
+        "max": 2000
+    },
+	"noiseFrequency": 3,
+	"uniforms": {
+        "surfaceTex": { "type": "t", "value": "sun.png" }
+    }
+}

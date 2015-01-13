@@ -1,0 +1,16 @@
+{
+	"noiseMultipliers": [
+        [0.2, 1],
+        [0.5, 2],
+        [0.3, 4],
+        [0.2, 8]
+    ],
+    "planetSurface": {
+        "min": 300,
+        "max": 5000
+    },
+    "noiseFrequency": 1.8,
+    "uniforms": {
+        "surfaceTex": { "type": "t", "value": "volcanic.png" }
+    }
+}

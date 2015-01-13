@@ -7,11 +7,14 @@ define(['three', 'camera', 'controls', 'renderer', 'stats', 'planet/planetManage
 
     var pggConfig = config.config.pgg;
 
-    var before = new Date();
-    var galaxyFactory = new GalaxyFactory(41242);
-    var systemArray = galaxyFactory.createGalaxyCube(4142, [0, 0, 0], 20);
-    var after = new Date();
-    alert(before.toString() + "\n" + after.toString());
+    var clock = new THREE.Clock();
+    clock.getDelta();
+
+    //var galaxyFactory = new GalaxyFactory(41242);
+    //var middle = new THREE.Vector3(0,0,0);
+    //var systemArray = galaxyFactory.createGalaxyCube(4142, middle, 100);
+
+    console.log(clock.getDelta());
 
     function App() {
 

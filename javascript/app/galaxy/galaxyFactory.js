@@ -1,7 +1,5 @@
 define(['three', 'utils/seededRandom'], function(THREE, SeededRandom) {
 
-    return GalaxyFactory;
-
 	function GalaxyFactory(factorySeed) {
 
 		this.factorySeed = factorySeed;
@@ -18,29 +16,19 @@ define(['three', 'utils/seededRandom'], function(THREE, SeededRandom) {
             var size2 = size / 2;
 
             for(var x=middle.x - size2; x<middle.x + size2; x++) {
-
                 for(var y=middle.y - size2; y<middle.y + size2; y++) {
-
                     for(var z=middle.z - size2; z<middle.z + size2; z++) {
-
                         systemArray[systemArray.length] = {
-
-                            position: new THREE.Vector3(x,y,z),
-                            angle: new THREE.Vector2(
-                                seededRandom.nextRandomFloatFromRange(-90, 90),
-                                seededRandom.nextRandomFloatFromRange(0, 360)
-                            ),
-
+                            position: new THREE.Vector3(x, y, z),
+                            angle: new THREE.Vector2(seededRandom.nextRandomFloatFromRange(-90, 90),
+                                seededRandom.nextRandomFloatFromRange(0, 360)),
                         };
-
                     }
-
                 }
-
             }
-
 			return systemArray;
-
 		}
+    }
 
+    return GalaxyFactory;
 });

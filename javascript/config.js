@@ -7,6 +7,8 @@ var require = {
 
     // --- Use shim to mix together all THREE.js subcomponents
     'threeCore': { exports: 'THREE' },
+    'threeTrackballControls': { deps: ['threeCore'], exports: 'THREE' },
+    'threeOrbitControls': { deps: ['threeCore'], exports: 'THREE' },
     'threeFlyControls': { deps: ['threeCore'], exports: 'THREE' },
     'threeOctree': { deps: ['threeCore'], exports: 'THREE' },
     // --- end THREE sub-components
@@ -23,6 +25,8 @@ var require = {
     threeCore: '../lib/three.min',
     threeOctree: '../lib/Octree',
     threeFlyControls: '../lib/FlyControls',
+    threeTrackballControls: '../lib/TrackballControls',
+    threeOrbitControls: '../lib/OrbitControls',
     // --- end THREE sub-components
     jquery: '../lib/jquery',
     statsCore: '../lib/stats',

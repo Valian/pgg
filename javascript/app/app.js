@@ -1,43 +1,27 @@
-define(['three', 'camera', 'controls', 'renderer', 'stats', 'planet/planetManager',
-    'planet/heightmapManager', 'containers/planetContainer', 'factories/planetFactory',
-    'seedrandom', 'system/systemFactory', 'config', 'galaxy/galaxyFactory'],
-    function (THREE, camera, controls, renderer, stats, planetManager,
-        heightmapManager, PlanetContainer, PlanetFactory, seedrandom,
-        SystemFactory, config, GalaxyFactory) {
+define(['three', 'renderer', 'stats', 'planet/heightmapManager',
+    'factories/planetFactory', 'seedrandom', 'system/systemFactory', 'config',
+    'galaxy/galaxyFactory', 'user/controls', 'user/camera'],
+    function (THREE, renderer, stats, heightmapManager, PlanetFactory,
+        seedrandom, SystemFactory, config, GalaxyFactory, Controls, Camera) {
 
     var pggConfig = config.config.pgg;
 
-    var clock = new THREE.Clock();
-    clock.getDelta();
-
-    //var galaxyFactory = new GalaxyFactory(41242);
-    //var middle = new THREE.Vector3(0,0,0);
-    //var systemArray = galaxyFactory.createGalaxyCube(4142, middle, 100);
-
-    console.log(clock.getDelta());
-
     function App() {
-
         var that = this;
 
         this.clock = new THREE.Clock();
         this.mainScene = new THREE.Scene();
-        this.planetContainer = new PlanetContainer();
-        this.mainScene.add(this.planetContainer.planets);
-
+        this.mainCamera = new Camera();
+        this.mainCamera.perspectiveCamera.position.z = 500000;
+        this.controls = new Controls(this.mainCamera.perspectiveCamera);
         this.run = run;
 
         function setup(seed) {
 
             var systemFactory = new SystemFactory(seed);
-            var system = systemFactory.createSystem(51512);
-
-            for(var i=0; i<system.planets.length; i++) {
-
-                that.planetContainer.addPlanet(system.planets[i]);
-
-            }
-
+            that.system = systemFactory.createSystem(51512);
+            that.mainScene.add(that.system.objects);
+            that.controls.setSystem(that.system);
         }
 
         function debugSetup(seed) {
@@ -70,10 +54,10 @@ define(['three', 'camera', 'controls', 'renderer', 'stats', 'planet/planetManage
 
         function update() {
             var delta = that.clock.getDelta();
-            that.planetContainer.updateAll();
+            that.system.update(that.mainCamera);
             heightmapManager.update();
-            controls.update(delta);
-            camera.updateFrustum();
+            that.controls.update(delta);
+            that.mainCamera.updateFrustum();
             stats.update(renderer);
         }
 
@@ -81,7 +65,7 @@ define(['three', 'camera', 'controls', 'renderer', 'stats', 'planet/planetManage
 
             requestAnimationFrame(function() { onFrame(); });
             update();
-            renderer.render(that.mainScene, camera);
+            renderer.render(that.mainScene, that.mainCamera.perspectiveCamera);
         }
 
     }

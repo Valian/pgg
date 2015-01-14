@@ -1,24 +1,14 @@
-define(["camera"], function(camera) {
+define([], function() {
 
-    return {
-
-        test: visibilityTest,
-
-    };
-
-
-    function visibilityTest(chunk, planetPosition, actualLevel) {
-
-        var frontSideVisible = isFrontSideVisible(chunk, planetPosition, actualLevel);
-        var inCameraFrustum = frontSideVisible && isInCameraFrustum(chunk);
-        return frontSideVisible && inCameraFrustum;
-
+    function visibilityTest(mainCamera, chunk, planetPosition, actualLevel) {
+        return isFrontSideVisible(mainCamera, chunk, planetPosition, actualLevel) &&
+            isInCameraFrustum(mainCamera, chunk);
     }
 
-    function isFrontSideVisible(chunk, planetPosition, actualLevel) {
+    function isFrontSideVisible(mainCamera, chunk, planetPosition, actualLevel) {
 
         var absolutePosition = chunk.relativePosition.clone().add(planetPosition);
-        var dir = camera.position.clone().sub(absolutePosition).normalize();
+        var dir = mainCamera.perspectiveCamera.position.clone().sub(absolutePosition).normalize();
         var dot = chunk.normal.dot(dir);
 
         var tolerance = 0.615 / Math.pow(2, actualLevel);
@@ -30,7 +20,7 @@ define(["camera"], function(camera) {
 
     }
 
-    function isInCameraFrustum(chunk) {
+    function isInCameraFrustum(mainCamera, chunk) {
 
         if (!chunk.mesh.boundingBox) {
 
@@ -38,8 +28,9 @@ define(["camera"], function(camera) {
 
         }
 
-        return camera.frustum.intersectsBox(chunk.mesh.boundingBox);
+        return mainCamera.frustum.intersectsBox(chunk.mesh.boundingBox);
 
     }
 
+    return visibilityTest;
 });

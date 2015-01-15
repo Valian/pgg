@@ -1,7 +1,6 @@
 define( function (require) {
 
     var THREE = require("three"),
-        camera = require("camera"),
         FaceMesh = require("planet/faceMesh"),
         visibilityTest = require("planet/chunkVisibilityTest"),
         LOD = require("planet/lodSystem"),
@@ -21,6 +20,8 @@ define( function (require) {
     return TerrainChunk;
 
     function TerrainChunk(properties, size, position, rotation, number) {
+
+        this.lod = new LOD();
 
         this.size = size;
         this.properties = properties;
@@ -146,19 +147,19 @@ define( function (require) {
 
     }
 
-    function update(planet, maxDetailLevel, actualLevel) {
+    function update(camera, planet, maxDetailLevel, actualLevel) {
 
         actualLevel = actualLevel || 0;
 
-        LOD.update(this, planet.position, actualLevel, maxDetailLevel);
+        this.lod.update(this, planet.position, actualLevel, maxDetailLevel, camera);
 
-        this.visibleByCamera = visibilityTest.test(this, planet.position, actualLevel);
+        this.visibleByCamera = visibilityTest(camera, this, planet.position, actualLevel);
         this.mesh.visible = this.visibleByCamera && !this.isDivided;
 
 
         for (var i = 0; i < this.chunks.length; i++) {
 
-            this.chunks[i].update(planet, maxDetailLevel, actualLevel + 1);
+            this.chunks[i].update(camera, planet, maxDetailLevel, actualLevel + 1);
 
         }
 

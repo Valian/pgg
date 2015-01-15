@@ -1,31 +1,30 @@
-define(["camera"], function(camera) {
+define([], function() {
+    
+    function LOD() {
+        this.update = update;
 
-    var position = new THREE.Vector3();
+        function update(chunk, planetPosition, actualLevel, maxLevel, mainCamera) {
+            var position = new THREE.Vector3();
 
-    return {
+            position.copy(planetPosition).add(chunk.positionOnSphere);
+            //var dist = camera.position.distanceTo(position);
+            var dist = mainCamera.perspectiveCamera.position.distanceTo(position);
+            var desiredLevel = (maxLevel * chunk.size - dist) / chunk.size;
 
-        update: updateLOD,
+            //TODO - add merge and split calls
+            if (desiredLevel > actualLevel && maxLevel > actualLevel) {
 
-    }
+                chunk.split();
 
-    function updateLOD(chunk, planetPosition, actualLevel, maxLevel) {
+            }
 
-        position.copy(planetPosition).add(chunk.positionOnSphere);
-        var dist = camera.position.distanceTo(position);
-        var desiredLevel = (maxLevel * chunk.size - dist) / chunk.size;
+            if (desiredLevel <= actualLevel - 0.5) {
 
-        //TODO - add merge and split calls
-        if (desiredLevel > actualLevel && maxLevel > actualLevel) {
+                chunk.merge();
 
-            chunk.split();
-
-        }
-
-        if (desiredLevel <= actualLevel - 0.5) {
-
-            chunk.merge();
-
+            }
         }
     }
 
+    return LOD;
 });

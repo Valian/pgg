@@ -49,11 +49,11 @@ define(["three", "planet/terrainChunk"], function(THREE, TerrainChunk) {
 
         }
 
-        function update() {
+        function update(camera) {
 
             for (key in this.chunks) {
 
-                this.chunks[key].update(this, this.lodMaxDetailLevel);
+                this.chunks[key].update(camera, this, this.lodMaxDetailLevel);
 
             }
 

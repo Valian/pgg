@@ -2,17 +2,17 @@ define(['three', 'utils/seededRandom'], function(THREE, SeededRandom) {
 
     return GalaxyFactory;
 
-	function GalaxyFactory(factorySeed) {
+    function GalaxyFactory(factorySeed) {
 
-		this.factorySeed = factorySeed;
-		this.createGalaxyCube = createGalaxyCube;
+        this.factorySeed = factorySeed;
+        this.createGalaxyCube = createGalaxyCube;
 
-		function createGalaxyCube(galaxySeed, middle, size) {
+        function createGalaxyCube(galaxySeed, middle, size) {
 
             var seed = this.factorySeed.toString() + galaxySeed.toString() +
                        middle.x.toFixed(2) + middle.y.toFixed(2) + middle.z.toFixed(2);
 
-			var seededRandom = new SeededRandom(seed);
+            var seededRandom = new SeededRandom(seed);
 
             var systemArray = [];
             var size2 = size / 2;
@@ -39,8 +39,10 @@ define(['three', 'utils/seededRandom'], function(THREE, SeededRandom) {
 
             }
 
-			return systemArray;
+            return systemArray;
 
-		}
+        }
+
+    }
 
 });

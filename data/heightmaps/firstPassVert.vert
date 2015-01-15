@@ -1,10 +1,6 @@
 precision highp float;
 
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
-
 attribute float multiplier;
-attribute vec3 position;
 attribute vec4 cornerPosition;
 
 varying vec3 varyingPosition;

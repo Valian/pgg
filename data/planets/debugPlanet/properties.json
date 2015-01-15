@@ -8,5 +8,5 @@
         "max": 5000
     },
     "lodMaxDetailLevel": 6,
-    "chunkSegments": 100
+    "chunkSegments": 60
 }

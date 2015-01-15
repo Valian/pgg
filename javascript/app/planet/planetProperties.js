@@ -1,4 +1,4 @@
-define(["three", "planet/heightmapGenerator", "resources", "utils/settings", "config"],
+define(["three", "heightmap/heightmapGenerator", "resources", "utils/settings", "config"],
        function(THREE, HeightmapGenerator, resources, settingsUtils, config) {
 
     return {

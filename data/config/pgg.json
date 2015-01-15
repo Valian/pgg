@@ -1,5 +1,5 @@
 {
-    "debugPlanetName": "sun",
+    "debugPlanetName": "debugPlanet",
     "notIncludedPlanets": [
         "template(forCopying)"
     ],

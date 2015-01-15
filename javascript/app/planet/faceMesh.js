@@ -5,7 +5,6 @@ define(["three", "planet/planeGeometriesContainer"], function(THREE, container){
     FaceMesh.prototype.disposeMesh = disposeMesh;
     FaceMesh.prototype.computeBoundingBox = computeBoundingBox;
 
-
     return FaceMesh;
 
     function FaceMesh(size, material, position, rotation, number, properties) {
@@ -89,7 +88,7 @@ define(["three", "planet/planeGeometriesContainer"], function(THREE, container){
             var range = 1 - 1 / (2 * segments);
             var vec = new THREE.Vector2();
 
-            for (var i = 0, il = uvs.length; i < il; i += 2) {
+            for (var i = 0; i < uvs.length; i += 2) {
 
                 vec.set(uvs[i] * 0.5, uvs[i + 1] * 0.5);
                 vec.add(startingPosition).multiplyScalar(range).add(translation);

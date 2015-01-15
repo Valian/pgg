@@ -5,7 +5,7 @@ define( function (require) {
         FaceMesh = require("planet/faceMesh"),
         visibilityTest = require("planet/chunkVisibilityTest"),
         LOD = require("planet/lodSystem"),
-        heightmapManager = require("planet/heightmapManager");
+        heightmapManager = require("heightmap/heightmapManager");
 
     TerrainChunk.prototype = {
 

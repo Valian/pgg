@@ -1,8 +1,7 @@
-define(['three', 'camera', 'controls', 'renderer', 'stats', 'planet/planetManager',
-    'planet/heightmapManager', 'containers/planetContainer', 'factories/planetFactory',
+define(['three', 'camera', 'controls', 'renderer', 'stats', 'heightmap/heightmapManager',
+       'containers/planetContainer', 'factories/planetFactory',
     'seedrandom', 'system/systemFactory', 'config', 'galaxy/galaxyFactory'],
-    function (THREE, camera, controls, renderer, stats, planetManager,
-        heightmapManager, PlanetContainer, PlanetFactory, seedrandom,
+    function (THREE, camera, controls, renderer, stats, heightmapManager, PlanetContainer, PlanetFactory, seedrandom,
         SystemFactory, config, GalaxyFactory) {
 
     var pggConfig = config.config.pgg;

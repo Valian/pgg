@@ -1,8 +1,8 @@
 define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
     'factories/planetFactory', 'seedrandom', 'system/systemFactory', 'config',
-    'galaxy/galaxyFactory', 'user/controls', 'user/camera'],
+    'galaxy/galaxyFactory', 'user/orbitControls', 'user/camera', 'user/fpsControls', 'user/controls'],
     function (THREE, renderer, stats, heightmapManager, PlanetFactory,
-        seedrandom, SystemFactory, config, GalaxyFactory, Controls, Camera) {
+        seedrandom, SystemFactory, config, GalaxyFactory, OrbitControls, Camera, FpsControls, Controls) {
 
     var pggConfig = config.config.pgg;
 
@@ -21,7 +21,7 @@ define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
             var systemFactory = new SystemFactory(seed);
             that.system = systemFactory.createSystem(51512);
             that.mainScene.add(that.system.objects);
-            that.controls.setSystem(that.system);
+            that.controls.setCurrentSystem(that.system);
         }
 
         function debugSetup(seed) {

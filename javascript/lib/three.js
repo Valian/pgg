@@ -1,3 +1,3 @@
 define(['threeCore', 'threeFlyControls', 'threeOctree',
-	'threeTrackballControls', 'threeOrbitControls'],
+	'threeTrackballControls', 'threeOrbitControls', 'threePointerLockControls'],
 	function(threeCore) { return threeCore; });

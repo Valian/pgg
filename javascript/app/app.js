@@ -1,10 +1,18 @@
 define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
     'factories/planetFactory', 'seedrandom', 'system/systemFactory', 'config',
-    'galaxy/galaxyFactory', 'user/orbitControls', 'user/camera', 'user/fpsControls', 'user/controls'],
+    'galaxy/galaxyFactory', 'user/orbitControls', 'user/camera', 'user/fpsControls',
+    'user/controls', 'galaxy/galaxy'],
     function (THREE, renderer, stats, heightmapManager, PlanetFactory,
-        seedrandom, SystemFactory, config, GalaxyFactory, OrbitControls, Camera, FpsControls, Controls) {
+        seedrandom, SystemFactory, config, GalaxyFactory, OrbitControls,
+        Camera, FpsControls, Controls, Galaxy) {
 
     var pggConfig = config.config.pgg;
+
+    var galaxyData = [];
+    for(var i=0; i<1000000; i++) {
+        galaxyData.push({angles: {theta: 360 * Math.random()}});
+    }
+    var galaxy = new Galaxy(galaxyData, 10);
 
     function App() {
         var that = this;

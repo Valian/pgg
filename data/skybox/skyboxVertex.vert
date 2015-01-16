@@ -32,10 +32,10 @@ void main()
 
     varColor = vec4(1.0, 1.0, 1.0, 1.0);
 
-    theta = theta * M_PI;
     phi = phi * 2.0 * M_PI;
+    theta = acos( 2.0 * theta - 1.0);
     vec3 spherePos = vec3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
 
     gl_PointSize = 10.0;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(spherePos * 1000000.0, 1.0);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(spherePos * 100.0, 1.0);
 }

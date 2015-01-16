@@ -42,7 +42,7 @@ define(['three', 'skybox/starPositionGenerator', 'config', 'resources', 'rendere
 
             }
 
-            return that.mesh;
+            return that.skybox;
 
         }
 

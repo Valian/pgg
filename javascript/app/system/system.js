@@ -9,7 +9,6 @@ define([], function() {
 		}
 		this.update = update;
 
-
 		function update(camera) {
 			for(var i=0; i<this.objects.children.length; i++) {
 				this.objects.children[i].update(camera);

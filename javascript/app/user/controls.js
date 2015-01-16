@@ -1,44 +1,36 @@
-define(['three'], function(THREE) {
+define(['three', 'user/fpsControls', 'user/orbitControls', 'utils/keyCodes'],
+	function(THREE, FpsControls, OrbitControls, KEY_CODES) {
 
 	function Controls(camera) {
 		var that = this;
 
-		this.orbitControls = new THREE.OrbitControls(camera);
-		this.orbitControls.damping = 0.2;
-		this.system = null;
-		this.currentPlanet = 0;
+		this.camera = camera;
+		this.controlsArray = [new OrbitControls(camera), new FpsControls(camera)];
+		this.currentControls = 0;
+		this.currentSystem = null;
+		this.setCurrentSystem = setCurrentSystem;
 		this.update = update;
-		this.setSystem = setSystem;
-		init();
 
-		function init() {
-			window.addEventListener('keydown', changePlanetOnKeyDown);
-			that.orbitControls.noPan = true;
+		window.addEventListener('keydown', toggleControls);
+		for(var i=0; i<that.controlsArray.length; i++) {
+			this.controlsArray[i].enabled = false;
 		}
+		this.controlsArray[this.currentControls].enabled = true;
 
-		function setSystem(system) {
-			this.system = system;
-			this.orbitControls.target = this.system.planets[0].position.clone();
+		function setCurrentSystem(system) {
+			this.currentSystem = system;
+			this.controlsArray[this.currentControls].init(this.currentSystem);
 		}
 
 		function update(deltaTime) {
-			this.orbitControls.update(deltaTime);
+			this.controlsArray[this.currentControls].update(deltaTime);
 		}
 
-		function changePlanetOnKeyDown(e) {
-			if(that.system) {
-				switch(e.keyCode) {
-					case 37:
-						that.currentPlanet -= 1;
-						if(that.currentPlanet == -1) {
-							that.currentPlanet = that.system.planets.length - 1;
-						}
-						break;
-					case 39:
-						that.currentPlanet = (that.currentPlanet + 1) % that.system.planets.length;
-						break;
-				}
-				that.orbitControls.target = that.system.planets[that.currentPlanet].position.clone();
+		function toggleControls(e) {
+			if(e.keyCode == KEY_CODES.SPACE) {
+				that.controlsArray[that.currentControls].controlsObject.enabled = false;
+				that.currentControls = (that.currentControls + 1) % that.controlsArray.length;
+				that.controlsArray[that.currentControls].controlsObject.enabled = true;
 			}
 		}
 	}

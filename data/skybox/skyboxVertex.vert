@@ -37,5 +37,5 @@ void main()
     vec3 spherePos = vec3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
 
     gl_PointSize = 10.0;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(spherePos * 100.0, 1.0);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(spherePos * 5000000.0, 1.0);
 }

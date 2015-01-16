@@ -1,11 +1,18 @@
 define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
     'factories/planetFactory', 'seedrandom', 'system/systemFactory', 'config',
-    'galaxy/galaxyFactory', 'user/controls', 'user/camera', 'skybox/skyboxGenerator', 'system/system'],
+    'galaxy/galaxyFactory', 'user/orbitControls', 'user/camera', 'user/fpsControls',
+    'user/controls', 'galaxy/galaxy', 'skybox/skyboxGenerator', 'system/system'],
     function (THREE, renderer, stats, heightmapManager, PlanetFactory,
-        seedrandom, SystemFactory, config, GalaxyFactory, Controls, Camera,
-        SkyboxGenerator, System) {
+        seedrandom, SystemFactory, config, GalaxyFactory, OrbitControls,
+        Camera, FpsControls, Controls, Galaxy, SkyboxGenerator, System) {
 
     var pggConfig = config.config.pgg;
+
+    //var galaxyData = [];
+    //for(var i=0; i<1000000; i++) {
+    //    galaxyData.push({angles: {theta: 360 * Math.random()}});
+    //}
+    //var galaxy = new Galaxy(galaxyData, 10);
 
     function App() {
         var that = this;
@@ -36,7 +43,7 @@ define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
             var systemFactory = new SystemFactory(seed);
             that.system = systemFactory.createSystem(51512);
             that.mainScene.add(that.system.objects);
-            that.controls.setSystem(that.system);
+            that.controls.setCurrentSystem(that.system);
         }
 
         function debugSetup(seed) {

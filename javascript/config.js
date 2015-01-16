@@ -9,6 +9,8 @@ var require = {
     threePointerLockControls: {deps: ['threeCore'], exports: 'THREE'},
     statsCore: {exports: 'Stats'},
     rendererStatsCore: {exports: 'THREEx'},
+    threeWindowResize: {exports: 'THREEx'},
+    threeFullScreen: {exports: 'THREEx'},
     detector: {exports: 'Detector'},
   },
   paths: {
@@ -16,6 +18,8 @@ var require = {
     threeCore: '../lib/three.min',
     threeOctree: '../lib/Octree',
     threeFlyControls: '../lib/FlyControls',
+    threeFullScreen: '../lib/threex.fullscreen',
+    threeWindowResize: '../lib/THREEx.WindowResize',
     threeTrackballControls: '../lib/TrackballControls',
     threePointerLockControls: '../lib/PointerLockControls',
     threeOrbitControls: '../lib/OrbitControls',

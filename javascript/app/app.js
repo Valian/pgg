@@ -1,10 +1,10 @@
 define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
     'factories/planetFactory', 'seedrandom', 'system/systemFactory', 'config',
     'galaxy/galaxyFactory', 'user/orbitControls', 'user/camera', 'user/fpsControls',
-    'user/controls', 'galaxy/galaxy', 'skybox/skyboxGenerator', 'system/system'],
+    'user/controls', 'galaxy/galaxy', 'skybox/skyboxGenerator', 'system/system', 'threeFullScreen'],
     function (THREE, renderer, stats, heightmapManager, PlanetFactory,
         seedrandom, SystemFactory, config, GalaxyFactory, OrbitControls,
-        Camera, FpsControls, Controls, Galaxy, SkyboxGenerator, System) {
+        Camera, FpsControls, Controls, Galaxy, SkyboxGenerator, System, THREEx) {
 
     var pggConfig = config.config.pgg;
 
@@ -25,6 +25,8 @@ define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
 
         this.run = run;
 
+        //THREEx.FullScreen.bindKey();
+        //THREEx.WindowResize(renderer, this.mainCamera.perspectiveCamera);
 
         var clock = new THREE.Clock();
         clock.getDelta();

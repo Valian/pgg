@@ -55,8 +55,8 @@ define(['three', 'skybox/starPositionGenerator', 'config', 'resources', 'rendere
 
                 new THREE.Vector3( 1,  0,  0),
                 new THREE.Vector3(-1,  0,  0),
-                new THREE.Vector3( 0,  1,  0),
                 new THREE.Vector3( 0, -1,  0),
+                new THREE.Vector3( 0,  1,  0),
                 new THREE.Vector3( 0,  0,  1),
                 new THREE.Vector3( 0,  0, -1)
 
@@ -116,6 +116,8 @@ define(['three', 'skybox/starPositionGenerator', 'config', 'resources', 'rendere
                 transparent: true,
                 side: THREE.DoubleSide,
                 sizeAttenuation: false,
+                blending: THREE.AdditiveBlending,
+                transparent: true
 
             });
 
@@ -148,7 +150,7 @@ define(['three', 'skybox/starPositionGenerator', 'config', 'resources', 'rendere
 
         function createCamera(scene) {
 
-            var camera = new THREE.PerspectiveCamera(45, 1, 1, 1000);
+            var camera = new THREE.PerspectiveCamera(45, 1, 100, 5000000);
             //camera.position.set(0, 0, 0);
             //camera.lookAt(new THREE.Vector3(-100, -100, 100));
             scene.add(camera);

@@ -1,10 +1,11 @@
 {
     "debugPlanetName": "debugPlanet",
     "notIncludedPlanets": [
-        "template(forCopying)"
+        "template(forCopying)",
+        "volcanic"
     ],
     "debug": false,
-    "random": false,
+    "random": true,
     "seed": "test",
     "wireframe": false
 }

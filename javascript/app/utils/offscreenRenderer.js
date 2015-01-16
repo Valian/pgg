@@ -28,6 +28,7 @@ define(["three", "renderer"], function(THREE, renderer) {
 
         this.setRenderArea = setRenderArea;
         this.render = render;
+        this.createRenderTarget = createRenderTarget;
 
 
         function render(renderTarget, renderData) {
@@ -54,6 +55,21 @@ define(["three", "renderer"], function(THREE, renderer) {
             that.columns = columns;
             that.camera.top = rows;
             that.camera.updateProjectionMatrix();
+
+        }
+
+        function createRenderTarget(width, height) {
+
+            var settings = {
+
+                minFilter: THREE.LinearFilter,
+                magFilter: THREE.NearestFilter,
+                generateMipmaps: false,
+                format: THREE.RGBAFormat,
+
+            };
+
+            return new THREE.WebGLRenderTarget(width, height, settings);
 
         }
 
@@ -93,6 +109,18 @@ define(["three", "renderer"], function(THREE, renderer) {
                     var row1 = row + 1;
                     var column1 = column + 1;
 
+                    //  indices
+                    //  5------------4,2
+                    //  |            /|
+                    //  |          /  |
+                    //  |        /    |
+                    //  |      /      |
+                    //  |    /        |
+                    //  |  /          |
+                    //  |/            |
+                    // 0,3 -----------1
+
+
                     attr.setXYZ( index + 0, column, row1, 0 );
                     attr.setXYZ( index + 1, column1, row1, 0 );
                     attr.setXYZ( index + 2, column1, row, 0 );
@@ -102,8 +130,8 @@ define(["three", "renderer"], function(THREE, renderer) {
                     attr.setXYZ( index + 5, column, row, 0);
 
                 },
-                updateFunc: undefined,
-                initData: undefined
+                updateFunc: null,
+                initData: null
 
             };
 

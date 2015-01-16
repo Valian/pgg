@@ -1,0 +1,6 @@
+{
+    "boxResolution": 30,
+    "skyboxSize": 500000,
+    "starTexture": "data/skybox/star.png",
+    "skyboxTextureSize": 2048
+}

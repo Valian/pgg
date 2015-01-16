@@ -11,10 +11,12 @@ JAVASCRIPT_DIR = os.path.join(BASE_DIR, 'javascript')
 
 PLANETS_DIR = os.path.join(DATA_DIR, 'planets')
 HEIGHTMAPS_DIR = os.path.join(DATA_DIR, 'heightmaps')
+SKYBOX_DIR = os.path.join(DATA_DIR, 'skybox')
 CONFIG_DIR = os.path.join(DATA_DIR, 'config')
 
 LOADERS = (
     ('heightmaps', SimpleDataLoader(HEIGHTMAPS_DIR)),
+    ('skybox', SimpleDataLoader(SKYBOX_DIR)),
     ('planets', ObjectsDefinitionsLoader(PLANETS_DIR)),
     ('config', SimpleDataLoader(CONFIG_DIR)),
 )

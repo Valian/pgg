@@ -1,5 +1,5 @@
-define(['three', 'utils/offscreenRenderer', 'config'],
-       function(THREE, OffscreenRenderer, config) {
+define(['three', 'utils/seededRandom', 'config'],
+       function(THREE, SeededRandom, config) {
 
     return StarPositionGenerator;
 
@@ -9,92 +9,38 @@ define(['three', 'utils/offscreenRenderer', 'config'],
 
         this.size = size;
         this.seed = seed;
-        this.offscreenRenderer = createRenderer();
 
         this.generate = generate;
 
         function generate(middlePos) {
 
-            var uniforms = that.offscreenRenderer.uniforms;
-            var renderTarget = that.offscreenRenderer.createRenderTarget(
+            var seed = that.seed + middlePos.x.toFixed + middlePos.y.toFixed + middlePos.z.toFixed;
+            var gen = new SeededRandom(seed);
+            var data = [];
+            var starSize = config.config.skybox.starSizeInRadians;
 
-                that.size * 2,
-                that.size * that.size
+            for(var x = -that.size / 2; x < that.size / 2; x++) {
 
-            );
+                for(var y = -that.size / 2; y < that.size / 2; y++) {
 
-            uniforms.middlePosition.value = middlePos.toArray();
+                    for(var z = -that.size / 2; z < that.size / 2; z++) {
 
-            that.offscreenRenderer.render(renderTarget);
+                        data.push({
 
-            return renderTarget;
+                            position: new THREE.Vector3(x,y,z).add(middlePos),
+                            theta: 2 * Math.PI * gen.nextRandomFloat(),
+                            phi: Math.acos(2 * gen.nextRandomFloat() - 1),
+                            size: gen.nextRandomFloatFromRange(starSize.min, starSize.max)
 
-        }
+                        })
 
-        function createRenderer() {
-
-            var vertex = config.skybox.positionGeneratorVertex;
-            var fragment = config.skybox.positionGeneratorFragment;
-            var uniforms = {
-
-                seed: { type: 'f', value: that.seed },
-                middlePosition: { type: '3fv', value: [0,0,0] }
-
-            };
-            var attributes = {
-
-                cornerPosition: {
-
-                    type: '3fv',
-                    itemSize: 3,
-                    initFunc: initCornerPositionAttribute,
-                    initData: { size: that.size }
-
-                },
-                floatComponent: {
-
-                    type: 'f',
-                    itemSize: 1,
-                    initFunc: initFloatComponentAttribute,
+                    }
 
                 }
 
-            };
-
-            return new OffscreenRenderer(vertex, fragment, {
-
-                uniforms: uniforms,
-                attributes: attributes,
-                rows: size,
-                columns: 2,
-
-            });
-
-        }
-
-        function initFloatComponentAttribute(attribute, data, startingIndex, row, column) {
-
-            for(var i=0; i < 6; i++) {
-
-                attribute.setX(startingIndex + i, column);
-
             }
 
-        }
-
-
-        function initCornerPositionAttribute(attribute, data, startingIndex, row)
-        {
-
-            //TODO - fix to take exact value at pixels
-            var size2 = data.size / 2;
-            attribute.setXYZ( startingIndex + 0, -size2, size2, row - size2 );
-            attribute.setXYZ( startingIndex + 1, size2, size2, row - size2 );
-            attribute.setXYZ( startingIndex + 2, size2, -size2, row - size2 );
-
-            attribute.setXYZ( startingIndex + 3, -size2, size2, row - size2 );
-            attribute.setXYZ( startingIndex + 4, size2, -size2, row - size2 );
-            attribute.setXYZ( startingIndex + 5, -size2, -size2, row - size2 );
+            return data;
 
         }
 

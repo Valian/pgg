@@ -25,18 +25,20 @@ define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
 
         this.run = run;
 
-        //THREEx.FullScreen.bindKey();
-        //THREEx.WindowResize(renderer, this.mainCamera.perspectiveCamera);
+        THREEx.FullScreen.bindKey();
+        THREEx.WindowResize(renderer, this.mainCamera.perspectiveCamera);
 
         var clock = new THREE.Clock();
         clock.getDelta();
         //var size = 40;
         var gen = new SkyboxGenerator(1);
         var skybox = gen.generate(new THREE.Vector3(0,0,0));
-        //var material = new THREE.MeshBasicMaterial({map: rt});
-        //var geometry = new THREE.PlaneBufferGeometry(size * 1000, size * 1000, 1,1);
+        //var material = new THREE.MeshBasicMaterial({map: skybox.material.uniforms.tCube.value.images[0]});
+        //var geometry = new THREE.PlaneBufferGeometry(10000, 10000, 1,1);
 
-        this.mainScene.add(skybox);
+        //this.mainScene.add(new THREE.Mesh(geometry, material));
+        this.mainScene.add(skybox.mesh);
+        this.mainScene.add(skybox.skybox);
         console.log(clock.getDelta());
 
 
@@ -56,7 +58,7 @@ define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
 
             that.system = new System(undefined, [planet]);
             that.mainScene.add(that.system.objects);
-            that.controls.setSystem(that.system);
+            that.controls.setCurrentSystem(that.system);
 
         }
 
@@ -79,12 +81,16 @@ define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
         }
 
         function update() {
+
             var delta = that.clock.getDelta();
-            that.system.update(that.mainCamera);
-            heightmapManager.update();
+
             that.controls.update(delta);
             that.mainCamera.updateFrustum();
+            that.system.update(that.mainCamera);
+            heightmapManager.update();
             stats.update(renderer);
+            //need some refactor
+            skybox.skybox.update(that.mainCamera.perspectiveCamera);
         }
 
         function onFrame() {

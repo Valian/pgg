@@ -1,6 +1,7 @@
 {
-    "boxResolution": 30,
-    "skyboxSize": 500000,
+    "gridResolution": 5,
+    "skyboxSize": 10000000,
     "starTexture": "data/skybox/star.png",
+    "starSizeInRadians": { "min": 0.01, "max": 0.03 },
     "skyboxTextureSize": 2048
 }

@@ -1,5 +1,5 @@
-define(['three', 'skybox/starPositionGenerator', 'config', 'resources', 'renderer'],
-       function(THREE, StarPositionGenerator, config, resources, renderer) {
+define(['three', 'skybox/starPositionGenerator', 'skybox/skybox', 'config', 'resources'],
+       function(THREE, StarPositionGenerator, Skybox, config, resources) {
 
     var skyboxConfig = config.config.skybox;
 
@@ -10,88 +10,45 @@ define(['three', 'skybox/starPositionGenerator', 'config', 'resources', 'rendere
         var that = this;
 
         this.seed = seed;
-        this.boxResolution = skyboxConfig.boxResolution;
-        this.textureSize = skyboxConfig.skyboxTextureSize;
+        this.gridResolution = skyboxConfig.gridResolution;
         this.starImagePath = skyboxConfig.starTexture;
-        this.skyboxSize = skyboxConfig.skyboxSize;
-        this.starPositionGenerator = new StarPositionGenerator(this.boxResolution, seed);
-        this.starData = null;
-
-        this.skybox = createSkybox();
+        this.starPositionGenerator = new StarPositionGenerator(this.gridResolution, seed);
 
         var scene = new THREE.Scene();
         var material = createMaterial();
         var geometry = createGeometry();
-        this.camera = createCamera(scene);
         this.mesh = createMesh(geometry, material, scene);
 
         this.generate = generate;
 
         function generate(middlePos) {
 
-            var uniforms = that.mesh.material.uniforms;
-            var dataTex = this.starPositionGenerator.generate(middlePos);
-            uniforms.dataTex.value = dataTex;
+            var skybox = new Skybox(skyboxConfig.skyboxSize, skyboxConfig.skyboxTextureSize);
+            var starData = that.starPositionGenerator.generate(middlePos);
 
-            var materials = that.skybox.material.materials;
-            for(var i = 0; i < materials.length; i++) {
+            updateAttributes(starData);
 
-                var renderTarget = materials[i].map;
-                that.camera.lookAt(materials[i].direction)
-                renderer.render(scene, that.camera, renderTarget, true );
+            skybox.render(scene);
 
-            }
+            return {
 
-            return that.mesh;
-
-        }
-
-        function createSkybox() {
-
-            var size = that.skyboxSize;
-            var skyGeometry = new THREE.BoxGeometry( size, size, size );
-            var materialArray = [];
-            var directions = [
-
-                new THREE.Vector3( 1,  0,  0),
-                new THREE.Vector3(-1,  0,  0),
-                new THREE.Vector3( 0, -1,  0),
-                new THREE.Vector3( 0,  1,  0),
-                new THREE.Vector3( 0,  0,  1),
-                new THREE.Vector3( 0,  0, -1)
-
-            ]
-
-            for (var i = 0; i < 6; i++) {
-
-                var material = new THREE.MeshBasicMaterial({
-
-                    map: createRenderTarget(that.textureSize, that.textureSize),
-                    side: THREE.BackSide
-
-                });
-
-                material.direction = directions[i];
-
-                materialArray.push( material );
+                skybox: skybox,
+                data: starData,
+                mesh: that.mesh
 
             }
-
-            var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
-            var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
-
-            return skyBox;
 
         }
 
         function createMaterial() {
 
-            var vertex = config.skybox.skyboxVertex;
-            var fragment = config.skybox.skyboxFragment;
+            var vertex = config.skybox.starVertex;
+            var fragment = config.skybox.starFragment;
             var attributes = {
 
-                //alpha: { type: 'f', value: [] },
-                //starSize: { type: 'f', value: [] }
+                size: { type: 'f', value: [] },
+                theta: { type: 'f', value: [] },
+                phi: { type: 'f', value: [] }
 
             };
             var uniforms = {
@@ -101,9 +58,7 @@ define(['three', 'skybox/starPositionGenerator', 'config', 'resources', 'rendere
                     type: "t",
                     value: resources.getTexture(that.starImagePath)
 
-                },
-                dataTex: { type: 't', value: null },
-                size: { type: 'f', value: that.boxResolution }
+                }
 
             };
 
@@ -116,8 +71,7 @@ define(['three', 'skybox/starPositionGenerator', 'config', 'resources', 'rendere
                 transparent: true,
                 side: THREE.DoubleSide,
                 sizeAttenuation: false,
-                blending: THREE.AdditiveBlending,
-                transparent: true
+                blending: THREE.AdditiveBlending
 
             });
 
@@ -125,52 +79,87 @@ define(['three', 'skybox/starPositionGenerator', 'config', 'resources', 'rendere
 
         function createGeometry() {
 
-            return new THREE.PlaneBufferGeometry(
+            var geometry = new THREE.BufferGeometry();
+            var starCount = Math.pow(that.gridResolution, 3);
+            var vertexes = starCount * 2 * 3;
 
-                10,
-                that.boxResolution * that.boxResolution / 10,
-                that.boxResolution - 1,
-                that.boxResolution * that.boxResolution - 1
+            var posArray = new Float32Array( vertexes * 3 );
+            var positions = new THREE.BufferAttribute( posArray, 3 );
 
-            );
+            for(var i = 0; i < starCount; i++) {
 
-            //return new THREE.SphereGeometry(20, 50, 50)
+                //  indices
+                //  5------------4,2
+                //  |            /|
+                //  |          /  |
+                //  |        /    |
+                //  |      /      |
+                //  |    /        |
+                //  |  /          |
+                //  |/            |
+                // 0,3 -----------1
+
+                var index = i * 6;
+
+                positions.setXYZ( index + 0, -0.5,  0.5, 0 );
+                positions.setXYZ( index + 1,  0.5,  0.5, 0 );
+                positions.setXYZ( index + 2,  0.5, -0.5, 0 );
+
+                positions.setXYZ( index + 3, -0.5,  0.5, 0 );
+                positions.setXYZ( index + 4,  0.5, -0.5, 0 );
+                positions.setXYZ( index + 5, -0.5, -0.5, 0 );
+
+            }
+
+            geometry.addAttribute( "position", positions );
+
+            var sizes = new THREE.BufferAttribute( new Float32Array(vertexes), 1 );
+            var thetas = new THREE.BufferAttribute( new Float32Array(vertexes), 1 );
+            var phis = new THREE.BufferAttribute( new Float32Array(vertexes), 1 );
+
+            for(var i = 0; i < vertexes; i++) {
+
+                sizes.setX(i, 1);
+                thetas.setX(i, 0);
+                phis.setX(i, 0);
+
+            }
+
+            geometry.addAttribute( "size", sizes );
+            geometry.addAttribute( "theta", thetas );
+            geometry.addAttribute( "phi", phis );
+
+            return geometry;
+
+        }
+
+        function updateAttributes(data) {
+
+            var attributes = that.mesh.geometry.attributes;
+
+            for(var i = 0; i < data.length; i++) {
+
+                for(var j = 0; j < 6; j++) {
+
+                    var index = i * 6 + j;
+
+                    attributes.size.setX(index, data[i].size);
+                    attributes.theta.setX(index, data[i].theta);
+                    attributes.phi.setX(index, data[i].phi);
+
+                }
+
+            }
 
         }
 
         function createMesh(geometry, material, scene) {
 
-            var mesh = new THREE.PointCloud(geometry, material);
+            var mesh = new THREE.Mesh(geometry, material);
             mesh.frustumCulled = false;
             scene.add(mesh);
 
             return mesh;
-
-        }
-
-        function createCamera(scene) {
-
-            var camera = new THREE.PerspectiveCamera(45, 1, 100, 5000000);
-            //camera.position.set(0, 0, 0);
-            //camera.lookAt(new THREE.Vector3(-100, -100, 100));
-            scene.add(camera);
-
-            return camera;
-
-        }
-
-        function createRenderTarget(width, height) {
-
-            var settings = {
-
-                minFilter: THREE.LinearFilter,
-                magFilter: THREE.LinearFilter,
-                generateMipmaps: true,
-                format: THREE.RGBAFormat,
-
-            };
-
-            return new THREE.WebGLRenderTarget(width, height, settings);
 
         }
 

@@ -12,6 +12,10 @@ define(['three'], function(THREE) {
 			matrix.multiplyMatrices(this.perspectiveCamera.projectionMatrix,
 				this.perspectiveCamera.matrixWorldInverse);
 			this.frustum.setFromMatrix(matrix);
+
+			var lookAtVector = new THREE.Vector3(0, 0, -1);
+			lookAtVector.applyQuaternion(this.perspectiveCamera.quaternion);
+			console.log(lookAtVector);
 		}
 
 		function getAngles() {

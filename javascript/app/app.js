@@ -1,12 +1,19 @@
 define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
     'factories/planetFactory', 'seedrandom', 'system/systemFactory', 'config',
     'galaxy/galaxyFactory', 'user/orbitControls', 'user/camera', 'user/fpsControls',
-    'user/controls', 'galaxy/galaxy', 'skybox/skyboxGenerator', 'system/system', 'threeFullScreen'],
+    'user/controls', 'galaxy/galaxy', 'skybox/skyboxGenerator', 'system/system', 'threeFullScreen',
+    'galaxy/bucketContainer'],
     function (THREE, renderer, stats, heightmapManager, PlanetFactory,
         seedrandom, SystemFactory, config, GalaxyFactory, OrbitControls,
-        Camera, FpsControls, Controls, Galaxy, SkyboxGenerator, System, THREEx) {
+        Camera, FpsControls, Controls, Galaxy, SkyboxGenerator, System, THREEx, BucketContainer) {
 
     var pggConfig = config.config.pgg;
+
+    var skyboxGenerator = new SkyboxGenerator(12512512);
+    var skybox = skyboxGenerator.generate(new THREE.Vector3(0, 0, 0));
+    var bucketContainer = new BucketContainer(skybox.data);
+    //bucketContainer.getSystemCoordinates(1.7, 1.0);
+    //debugger;
 
     //var galaxyData = [];
     //for(var i=0; i<1000000; i++) {

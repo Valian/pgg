@@ -4,7 +4,7 @@
         "template(forCopying)",
         "volcanic"
     ],
-    "debug": true,
+    "debug": false,
     "random": false,
     "seed": "test",
     "wireframe": false

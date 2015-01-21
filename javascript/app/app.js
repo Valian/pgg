@@ -28,19 +28,6 @@ define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
         THREEx.FullScreen.bindKey();
         THREEx.WindowResize(renderer, this.mainCamera.perspectiveCamera);
 
-        var clock = new THREE.Clock();
-        clock.getDelta();
-        //var size = 40;
-        var gen = new SkyboxGenerator(1);
-        var skybox = gen.generate(new THREE.Vector3(0,0,0));
-        //var material = new THREE.MeshBasicMaterial({map: skybox.material.uniforms.tCube.value.images[0]});
-        //var geometry = new THREE.PlaneBufferGeometry(10000, 10000, 1,1);
-
-        //this.mainScene.add(new THREE.Mesh(geometry, material));
-        this.mainScene.add(skybox.mesh);
-        this.mainScene.add(skybox.skybox);
-        console.log(clock.getDelta());
-
 
         function setup(seed) {
 
@@ -48,6 +35,7 @@ define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
             that.system = systemFactory.createSystem(51512);
             that.mainScene.add(that.system.objects);
             that.controls.setCurrentSystem(that.system);
+
         }
 
         function debugSetup(seed) {
@@ -65,6 +53,15 @@ define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
         function run() {
 
             var seed = pggConfig.random ? Math.random() : pggConfig.seed;
+
+
+            var clock = new THREE.Clock();
+            clock.getDelta();
+
+            var skyboxGenerator = new SkyboxGenerator(seed);
+            that.skybox = skyboxGenerator.generate(new THREE.Vector3(0,0,0));
+            this.mainScene.add(that.skybox);
+            console.log(clock.getDelta());
 
             if(pggConfig.debug) {
 
@@ -89,8 +86,7 @@ define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
             that.system.update(that.mainCamera);
             heightmapManager.update();
             stats.update(renderer);
-            //need some refactor
-            skybox.skybox.update(that.mainCamera.perspectiveCamera);
+            that.skybox.update(that.mainCamera.perspectiveCamera);
         }
 
         function onFrame() {

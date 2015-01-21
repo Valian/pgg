@@ -1,26 +1,26 @@
-define(['three', 'renderer', 'config'],
-       function(THREE, renderer, config){
+define(['three', 'config', 'resources'],
+       function(THREE, config, resources){
 
-    Skybox.prototype = Object.create(THREE.Mesh.prototype);
+    Skybox.prototype = Object.create(THREE.PointCloud.prototype);
+
+    var skyboxConfig = config.config.skybox;
 
     return Skybox;
 
-    function Skybox(size, resolution) {
+    function Skybox(data) {
 
         var that = this;
+        this.starCount = data.length;
+        this.data = data;
 
-        this.size = size;
-        this.resolution = resolution;
+        var material = createMaterial();
+        var geometry = createGeometry(data);
 
-        var faces = createFaces();
-        var material = createMaterial(faces);
-        var camera = new THREE.PerspectiveCamera(90, 1, 100, 500000);
-        var geometry = new THREE.BoxGeometry( size, size, size );
+        THREE.PointCloud.call(this, geometry, material);
+        this.frustumCulled = false;
 
-        THREE.Mesh.call(this, geometry, material);
-
-        this.render = render;
         this.update = update;
+
 
         function update(camera) {
 
@@ -28,82 +28,69 @@ define(['three', 'renderer', 'config'],
 
         }
 
-        function render(scene) {
+        function createMaterial() {
 
-            for(var i = 0; i < faces.length; i++) {
+            var vertex = config.skybox.starVertex;
+            var fragment = config.skybox.starFragment;
+            var attributes = {
 
-                camera.up = faces[i].up;
-                camera.lookAt(faces[i].direction);
-                renderer.render(scene, camera, faces[i].renderTarget, true);
+                size: { type: 'f', value: [] },
+                theta: { type: 'f', value: [] },
+                phi: { type: 'f', value: [] }
 
-            }
+            };
+            var uniforms = {
 
-            that.material.needsUpdate = true;
+                imageTex: {
 
-        }
+                    type: "t",
+                    value: resources.getTexture(skyboxConfig.starTexture)
 
-        function createFaces() {
-
-            var createFace = function(direction, up) {
-
-                return {
-
-                    renderTarget: createRenderTarget(that.resolution, that.resolution),
-                    direction: direction,
-                    up: up
-
-                };
+                }
 
             };
 
-            var faces = [
+            return new THREE.ShaderMaterial( {
 
-                createFace(new THREE.Vector3( 1,  0,  0), new THREE.Vector3(0, 0, 1)),
-                createFace(new THREE.Vector3(-1,  0,  0), new THREE.Vector3(0, 0, -1)),
-                createFace(new THREE.Vector3( 0,  1,  0), new THREE.Vector3(0, 0, -1)),
-                createFace(new THREE.Vector3( 0, -1,  0), new THREE.Vector3(0, 0, 1)),
-                createFace(new THREE.Vector3( 0,  0,  1), new THREE.Vector3(0, 1, 0)),
-                createFace(new THREE.Vector3( 0,  0, -1), new THREE.Vector3(1, 1, 0))
+                uniforms: uniforms,
+                attributes: attributes,
+                vertexShader: vertex,
+                fragmentShader: fragment,
+                transparent: true,
+                side: THREE.DoubleSide,
+                sizeAttenuation: false,
+                blending: THREE.AdditiveBlending
 
-            ]
-
-            return faces;
+            });
 
         }
 
+        function createGeometry(data) {
 
-        function createMaterial(faces) {
+            var geometry = new THREE.BufferGeometry();
 
-            var materials = [];
-            for(var i = 0; i < faces.length; i++) {
+            var radius = skyboxConfig.skyboxSize;
 
-                materials.push(new THREE.MeshBasicMaterial({
+            var starCount = data.length;
+            var posArray = new Float32Array( starCount * 3 );
+            var positions = new THREE.BufferAttribute( posArray, 3 );
+            var sizes = new THREE.BufferAttribute( new Float32Array(starCount), 1 );
 
-                    map: faces[i].renderTarget,
-                    side: THREE.BackSide
+            for(var i = 0; i < starCount; i++) {
 
-                }));
+                var x = Math.sin(data[i].theta) * Math.cos(data[i].phi);
+                var y = Math.sin(data[i].theta) * Math.sin(data[i].phi);
+                var z = Math.cos(data[i].theta);
+
+                positions.setXYZ( i, x * radius, y * radius, z  * radius);
+                sizes.setX(i, data[i].size);
 
             }
 
+            geometry.addAttribute( "position", positions );
+            geometry.addAttribute( "size", sizes );
 
-            return new THREE.MeshFaceMaterial(materials);
-
-        }
-
-
-        function createRenderTarget(width, height) {
-
-            var settings = {
-
-                minFilter: THREE.LinearFilter,
-                magFilter: THREE.LinearFilter,
-                generateMipmaps: true,
-                format: THREE.RGBAFormat,
-
-            };
-
-            return new THREE.WebGLRenderTarget(width, height, settings);
+            return geometry;
 
         }
 

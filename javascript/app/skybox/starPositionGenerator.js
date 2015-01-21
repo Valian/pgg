@@ -28,8 +28,8 @@ define(['three', 'utils/seededRandom', 'config'],
                         data.push({
 
                             position: new THREE.Vector3(x,y,z).add(middlePos),
-                            theta: 2 * Math.PI * gen.nextRandomFloat(),
-                            phi: Math.acos(2 * gen.nextRandomFloat() - 1),
+                            theta: Math.acos(2 * gen.nextRandomFloat() - 1),
+                            phi: 2 * Math.PI * gen.nextRandomFloat(),
                             size: gen.nextRandomFloatFromRange(starSize.min, starSize.max)
 
                         })

@@ -28,7 +28,9 @@ define(['galaxy/bucket'], function(Bucket) {
 		function getSystemCoordinates(theta, phi) {
 			for(var j=0; j<this.buckets.length; j++) {
 				if(this.buckets[j].contains(theta)) {
-					throw 'jest w ' + j;
+					for(var i=0; i<this.buckets[j].data.length; i++) {
+
+					}
 				}
 			}
 			throw 'nie ma';

@@ -1,11 +1,12 @@
 define(['three', 'user/fpsControls', 'user/orbitControls', 'utils/keyCodes'],
 	function(THREE, FpsControls, OrbitControls, KEY_CODES) {
 
-	function Controls(camera) {
+	function Controls(camera, app) {
 		var that = this;
 
 		this.camera = camera;
-		this.controlsArray = [new OrbitControls(camera), new FpsControls(camera)];
+		this.app = app
+		this.controlsArray = [new OrbitControls(this.app, camera), new FpsControls(camera)];
 		this.currentControls = 0;
 		this.currentSystem = null;
 		this.setCurrentSystem = setCurrentSystem;

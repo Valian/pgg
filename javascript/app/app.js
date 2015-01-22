@@ -1,108 +1,74 @@
 define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
     'factories/planetFactory', 'seedrandom', 'system/systemFactory', 'config',
-    'galaxy/galaxyFactory', 'user/orbitControls', 'user/camera', 'user/fpsControls',
-    'user/controls', 'galaxy/galaxy', 'skybox/skyboxGenerator', 'system/system', 'threeFullScreen',
+    'user/orbitControls', 'user/camera', 'user/fpsControls',
+    'user/controls', 'galaxy/galaxy', 'skybox/skyboxFactory', 'system/system', 'threeFullScreen',
     'galaxy/bucketContainer'],
     function (THREE, renderer, stats, heightmapManager, PlanetFactory,
-        seedrandom, SystemFactory, config, GalaxyFactory, OrbitControls,
-        Camera, FpsControls, Controls, Galaxy, SkyboxGenerator, System, THREEx, BucketContainer) {
+        seedrandom, SystemFactory, config, OrbitControls,
+        Camera, FpsControls, Controls, Galaxy, SkyboxFactory, System, THREEx, BucketContainer) {
+
 
     var pggConfig = config.config.pgg;
 
-    var skyboxGenerator = new SkyboxGenerator(12512512);
-    var skybox = skyboxGenerator.generate(new THREE.Vector3(0, 0, 0));
-    var bucketContainer = new BucketContainer(skybox.data);
-    //bucketContainer.getSystemCoordinates(1.7, 1.0);
-    //debugger;
 
-    //var galaxyData = [];
-    //for(var i=0; i<1000000; i++) {
-    //    galaxyData.push({angles: {theta: 360 * Math.random()}});
-    //}
-    //var galaxy = new Galaxy(galaxyData, 10);
-
-    function App() {
+    function App(seed) {
         var that = this;
 
         this.clock = new THREE.Clock();
-        this.mainScene = new THREE.Scene();
-        this.mainCamera = new Camera();
-        this.mainCamera.perspectiveCamera.position.z = 5000;
-        this.controls = new Controls(this.mainCamera.perspectiveCamera);
+        this.scene = new THREE.Scene();
+        this.camera = new Camera();
+        this.camera.perspectiveCamera.position.z = 5000;
+        this.controls = new Controls(this.camera.perspectiveCamera, this);
+        this.galaxy = new Galaxy(4124);
+        THREEx.FullScreen.bindKey();
+        THREEx.WindowResize(renderer, this.camera.perspectiveCamera);
 
         this.run = run;
-
-        THREEx.FullScreen.bindKey();
-        THREEx.WindowResize(renderer, this.mainCamera.perspectiveCamera);
-
-
-        function setup(seed) {
-
-            var systemFactory = new SystemFactory(seed);
-            that.system = systemFactory.createSystem(51512);
-            that.mainScene.add(that.system.objects);
-            that.controls.setCurrentSystem(that.system);
-
-        }
-
-        function debugSetup(seed) {
-
-            var planetFactory = new PlanetFactory(seed);
-            var planet = planetFactory.createPlanet(1);
-            planet.position.z -= planet.planetRadius * 3;
-
-            that.system = new System(undefined, [planet]);
-            that.mainScene.add(that.system.objects);
-            that.controls.setCurrentSystem(that.system);
-
-        }
+        this.onFrame = onFrame;
+        this.switchSystem = switchSystem;
 
         function run() {
+            this.galaxy.setCurrentSystemIndices(0, 12, 0);
+            this.skybox = this.galaxy.currentSkybox;
+            this.system = this.galaxy.currentSystem;
 
-            var seed = pggConfig.random ? Math.random() : pggConfig.seed;
+            this.scene.add(this.skybox);
+            this.scene.add(this.system.objects);
+            this.controls.setCurrentSystem(this.system);
 
+            //while(this.scene.children.length > 0) {
+            //    this.scene.remove(this.scene.children[0]);
+            //}
 
-            var clock = new THREE.Clock();
-            clock.getDelta();
-
-            var skyboxGenerator = new SkyboxGenerator(seed);
-            that.skybox = skyboxGenerator.generate(new THREE.Vector3(0,0,0));
-            this.mainScene.add(that.skybox);
-            console.log(clock.getDelta());
-
-            if(pggConfig.debug) {
-
-                debugSetup(seed);
-
-            } else {
-
-                setup(seed);
-
-            }
-
-
-            onFrame();
+            this.onFrame();
         }
 
-        function update() {
+        function switchSystem(x, y, z) {
+            while(this.scene.children.length > 0) {
+                this.scene.remove(this.scene.children[0]);
+            }
 
-            var delta = that.clock.getDelta();
+            this.galaxy.setCurrentSystemIndices(x, y, z);
+            this.skybox = this.galaxy.currentSkybox;
+            this.system = this.galaxy.currentSystem;
 
-            that.controls.update(delta);
-            that.mainCamera.updateFrustum();
-            that.system.update(that.mainCamera);
-            heightmapManager.update();
-            stats.update(renderer);
-            that.skybox.update(that.mainCamera.perspectiveCamera);
+            this.scene.add(this.skybox);
+            this.scene.add(this.system.objects);
+            this.controls.setCurrentSystem(this.system);
         }
 
         function onFrame() {
+            requestAnimationFrame(function() { that.onFrame(); });
 
-            requestAnimationFrame(function() { onFrame(); });
-            update();
-            renderer.render(that.mainScene, that.mainCamera.perspectiveCamera);
+            this.galaxy.update(this.camera)
+
+            this.controls.update(this.clock.getDelta());
+            this.camera.updateFrustum();
+            heightmapManager.update();
+
+            renderer.render(this.scene, this.camera.perspectiveCamera);
+            stats.update(renderer);
         }
-
     }
 
     return App;

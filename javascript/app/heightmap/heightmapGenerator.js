@@ -28,7 +28,6 @@ define(["three", "renderer", "resources", "config", "heightmap/firstPass", "heig
 
                 var count = part.length;
 
-                console.log(count);
                 clock.getDelta();
 
                 var sourceTex = createRenderTarget(
@@ -42,8 +41,6 @@ define(["three", "renderer", "resources", "config", "heightmap/firstPass", "heig
                 this.secondPass.makePass(part, sourceTex);
 
                 sourceTex.dispose();
-
-                console.log(clock.getDelta());
 
             } while (paramCopy.length > 0);
 

@@ -1,8 +1,9 @@
 define(['three', 'utils/keyCodes'], function(THREE, KEY_CODES) {
 
-	function OrbitControls(camera) {
+	function OrbitControls(app, camera) {
 		var that = this;
 
+		this.app = app;
 		this.camera = camera;
 		this.controlsObject = new THREE.OrbitControls(camera);
 		this.system = null;
@@ -13,6 +14,7 @@ define(['three', 'utils/keyCodes'], function(THREE, KEY_CODES) {
 		window.addEventListener('keydown', changePlanetOnKeyDown);
 		window.addEventListener('keydown', disableOrbitControlsOnLeftCtrlDown);
 		window.addEventListener('keyup', enableOrbitControlsOnLeftCtrlUp);
+		window.addEventListener('click', changeSystemOnClick);
 		this.controlsObject.noPan = true;
 
 		function init(system) {
@@ -50,6 +52,16 @@ define(['three', 'utils/keyCodes'], function(THREE, KEY_CODES) {
 		function enableOrbitControlsOnLeftCtrlUp(e) {
 			if(e.keyCode == KEY_CODES.CTRL) {
 				that.controlsObject.enabled = true;
+			}
+		}
+
+		function changeSystemOnClick(e) {
+			if(!that.controlsObject.enabled) {
+				that.app.switchSystem(
+					Math.floor(200 * Math.random()),
+					Math.floor(200 * Math.random()),
+					Math.floor(200 * Math.random())
+				);
 			}
 		}
 	}

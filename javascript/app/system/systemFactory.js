@@ -6,8 +6,8 @@ define(['utils/seededRandom', 'config', 'utils/math', 'factories/planetFactory',
 	function SystemFactory(factorySeed) {
 		this.factorySeed = factorySeed;
 
-		this.createSystem = function(systemSeed) {
-			var seededRandom = new SeededRandom(factorySeed + systemSeed);
+		this.createSystem = function(x, y, z) {
+			var seededRandom = new SeededRandom(factorySeed + x + y + z);
 			var numberOfPlanets = this.generateNumberOfPlanets(seededRandom);
 			var orbitsRadiuses = this.generateOrbitsRadiuses(seededRandom, numberOfPlanets);
 			var planetsPositions = this.generatePlanetsPositions(seededRandom, orbitsRadiuses);

@@ -23,9 +23,7 @@ define(['three', 'config', 'resources'],
 
 
         function update(camera) {
-
-            that.position.copy(camera.position);
-
+            that.position.copy(camera.perspectiveCamera.position);
         }
 
         function createMaterial() {

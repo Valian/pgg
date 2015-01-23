@@ -1,19 +1,27 @@
-define(['galaxy/galaxyBucket'], function(GalaxyBucket) {
+define(['three', 'skybox/skyboxFactory', 'system/systemFactory'],
+	function(THREE, SkyboxFactory, SystemFactory) {
 
-	function Galaxy(galaxyData, numberOfBuckets) {
-		this.buckets = [];
-		for(var i=0; i<numberOfBuckets; i++) {
-			var fromValue = i * 360.0 / numberOfBuckets;
-			var toValue = (i + 1) * 360.0 / numberOfBuckets;
-			this.buckets.push(new GalaxyBucket(fromValue, toValue));
+	function Galaxy(seed) {
+		var that = this;
+
+		this.skyboxFactory = new SkyboxFactory(seed);
+		this.systemFactory = new SystemFactory(seed);
+		this.currentIndices = null;
+		this.currentSystem = null;
+		this.currentSkybox = null;
+
+		this.setCurrentSystemIndices = setCurrentSystemIndices;
+		this.update = update;
+
+		function setCurrentSystemIndices(x, y, z) {
+			this.currentIndices = new THREE.Vector3(x, y, z);
+			this.currentSystem = this.systemFactory.createSystem(x, y, z);
+			this.currentSkybox = this.skyboxFactory.createSkybox(x, y, z);
 		}
-		for(var i=0; i<galaxyData.length; i++) {
-			for(var j=0; j<this.buckets.length; j++) {
-				if(this.buckets[j].contains(galaxyData[i].angles.theta)) {
-					this.buckets[j].data.push(galaxyData[i]);
-					break;
-				}
-			}
+
+		function update(camera) {
+			this.currentSystem.update(camera);
+			this.currentSkybox.update(camera);
 		}
 	}
 

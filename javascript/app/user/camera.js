@@ -1,4 +1,4 @@
-define(['three'], function(THREE) {
+define(['three', 'utils/math'], function(THREE, MathUtils) {
 
 	function Camera() {
 		this.perspectiveCamera = new THREE.PerspectiveCamera(
@@ -15,7 +15,10 @@ define(['three'], function(THREE) {
 		}
 
 		function getAngles() {
-
+			var lookAtVector = new THREE.Vector3(0, 0, -1);
+			lookAtVector.applyQuaternion(this.perspectiveCamera.quaternion);
+			var spherical = MathUtils.cartesianToSpherical(lookAtVector.x, lookAtVector.y, lookAtVector.z);
+			return [spherical[1], spherical[2]];
 		}
 	}
 

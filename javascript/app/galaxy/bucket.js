@@ -1,9 +1,9 @@
 define([], function() {
 
-	function GalaxyBucket(valueFrom, valueTo) {
+	function Bucket(valueFrom, valueTo, data) {
 		this.valueFrom = valueFrom;
 		this.valueTo = valueTo;
-		this.data = [];
+		this.data = data;
 		this.contains = contains;
 
 		function contains(value) {
@@ -11,5 +11,5 @@ define([], function() {
 		}
 	}
 
-	return GalaxyBucket;
+	return Bucket;
 });

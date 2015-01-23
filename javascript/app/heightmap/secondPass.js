@@ -33,7 +33,7 @@ define(["three", "utils/offscreenRenderer", "config"],
                 uniforms.row.value = i;
                 uniforms.multipliers.value = multipliersArray;
 
-                that.offscreenRenderer.render(parametersArray[i].renderTarget);
+                that.offscreenRenderer.render(parametersArray[i].heightmap);
 
             }
 

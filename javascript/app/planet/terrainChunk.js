@@ -19,11 +19,12 @@ define( function (require) {
 
     return TerrainChunk;
 
-    function TerrainChunk(properties, size, position, rotation, number) {
+    function TerrainChunk(properties, size, position, rotation, number, level) {
 
         this.lod = new LOD();
 
         this.size = size;
+        this.level = level;
         this.properties = properties;
         this.material = properties.material.clone();
         this.visibleByCamera = true;
@@ -48,7 +49,7 @@ define( function (require) {
 
         );
 
-        this.heightmapParams = createHeightmapParams( this.mesh.corners );
+        this.heightmapParams = createHeightmapParams( this.mesh.corners, this.level );
 
         //autogenerate heightmap for 0 lvl
         if(number == -1) {
@@ -57,7 +58,7 @@ define( function (require) {
 
         }
 
-        function createHeightmapParams(corners) {
+        function createHeightmapParams(corners, level) {
 
             var heightmapGen = properties.heightmapGenerator;
 
@@ -65,7 +66,8 @@ define( function (require) {
 
                 generator: heightmapGen,
                 corners: corners,
-                properties : properties
+                properties : properties,
+                level: level
 
             };
 
@@ -93,7 +95,8 @@ define( function (require) {
                 this.size / 2,
                 newCenter,
                 this.rotation,
-                i
+                i,
+                this.level + 1
 
             );
 
@@ -136,30 +139,25 @@ define( function (require) {
 
     }
 
-    function setHeightmap(heightmap) {
+    function setHeightmap(data) {
 
-        this.material.uniforms.heightmapTex = {
-
-            type: "t",
-            value: heightmap
-
-        };
+        var uniforms = this.material.uniforms;
+        uniforms.heightmapTex = { type: "t", value: data.heightmap };
+        uniforms.bumpmapTex = { type: "t", value: data.bumpmap };
 
     }
 
-    function update(camera, planet, maxDetailLevel, actualLevel) {
+    function update(camera, planet, maxDetailLevel) {
 
-        actualLevel = actualLevel || 0;
+          this.lod.update(this, planet.position, maxDetailLevel, camera);
 
-        this.lod.update(this, planet.position, actualLevel, maxDetailLevel, camera);
-
-        this.visibleByCamera = visibilityTest(camera, this, planet.position, actualLevel);
+        this.visibleByCamera = visibilityTest(camera, this, planet.position);
         this.mesh.visible = this.visibleByCamera && !this.isDivided;
 
 
         for (var i = 0; i < this.chunks.length; i++) {
 
-            this.chunks[i].update(camera, planet, maxDetailLevel, actualLevel + 1);
+            this.chunks[i].update(camera, planet, maxDetailLevel);
 
         }
 

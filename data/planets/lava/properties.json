@@ -4,7 +4,8 @@
         "max": 3
     },
     "uniforms": {
-        "surfaceTex": { "type": "t", "value": "lava.png" }
+        "surfaceTex": { "type": "t", "value": "lava.png" },
+        "lightTex": { "type": "t", "value": "lava_light.png" }
     },
     "noiseMultipliers": [
         { "weight": 0.5, "frequency": {"min": 0.5, "max": 1}},

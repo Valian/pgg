@@ -23,7 +23,6 @@ float unpack_value(const in vec4 rgba_value)
     return depth;
 }
 
-
 float snoise(int level)
 {
     vec2 coords = vec2((vUV.x + float(level)) / FOCTAVES, (vUV.y + row) / verticalCount);

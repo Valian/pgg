@@ -1,7 +1,7 @@
 define([], function() {
 
-    function visibilityTest(mainCamera, chunk, planetPosition, actualLevel) {
-        return isFrontSideVisible(mainCamera, chunk, planetPosition, actualLevel) &&
+    function visibilityTest(mainCamera, chunk, planetPosition) {
+        return isFrontSideVisible(mainCamera, chunk, planetPosition, chunk.level) &&
             isInCameraFrustum(mainCamera, chunk);
     }
 

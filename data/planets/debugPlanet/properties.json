@@ -8,5 +8,8 @@
         "max": 5000
     },
     "lodMaxDetailLevel": 6,
-    "chunkSegments": 60
+    "chunkSegments": 60,
+    "noiseMultipliers": [
+        { "weight": 1, "frequency": {"min": 1, "max": 1}}
+    ]
 }

@@ -12,18 +12,122 @@ define(["three", "planet/planeGeometriesContainer"], function(THREE, container){
         var segments = properties.chunkSegments;
         var planetRadius = properties.planetRadius;
         var planetSurface = properties.planetSurface;
-        var geometry = container.getPlaneGeometry(size, segments);
-
-        moveGeometry(geometry);
+        var geometry = createGeometry(size, position, rotation, number, properties);
 
         this.corners = createCorners(geometry);
         this.originalBoundingBox = computeGeometryBoundingBox(this.corners);
 
-        setUV(geometry);
-
         THREE.Mesh.call(this, geometry, material);
 
         this.frustumCulled = false;
+
+        function createGeometry(size, position, rotation, number, properties) {
+
+            var geometry = new THREE.BufferGeometry();
+
+            var mat = new THREE.Matrix4();
+            mat.makeRotationFromEuler(rotation);
+            mat.setPosition(position);
+
+            var size_half = size / 2;
+            var grid = properties.chunkSegments;
+            var grid1 = grid + 1;
+
+            var leftTop = new THREE.Vector3(-size_half, -size_half, 0);
+            var rightTop = new THREE.Vector3(size_half, -size_half, 0);
+            var leftBottom = new THREE.Vector3(-size_half, size_half, 0);
+            var rightBottom = new THREE.Vector3(size_half, size_half, 0);
+
+            leftTop.applyMatrix4(mat);
+            rightTop.applyMatrix4(mat);
+            leftBottom.applyMatrix4(mat);
+            rightBottom.applyMatrix4(mat);
+
+            var segment_diff_x = rightTop.clone().sub(leftTop).divideScalar(grid);
+            var segment_diff_y = leftBottom.clone().sub(leftTop).divideScalar(grid);
+
+            var uvRange = 1 - 1 / (2 * grid);
+            var uvStartingPosition = new THREE.Vector2((number % 2) * 0.5 - 0.5, (1 - Math.floor(number / 2)) * 0.5 - 0.5);
+
+            var vertices = new Float32Array( grid1 * grid1 * 3 );
+            var tangents = new Float32Array( grid1 * grid1 * 3 );
+            var uvs = new Float32Array( grid1 * grid1 * 2 );
+
+            var offset = 0;
+            var offset2 = 0;
+
+            var actualPos = new THREE.Vector3();
+            var helperVec = new THREE.Vector3();
+
+            for ( var iy = 0; iy < grid1; iy ++ ) {
+
+                helperVec.copy(segment_diff_y).multiplyScalar(iy);
+                actualPos.copy(leftBottom).sub(helperVec);
+
+                for ( var ix = 0; ix < grid1; ix ++ ) {
+
+                    vertices[ offset     ] = actualPos.x;
+                    vertices[ offset + 1 ] = actualPos.y;
+                    vertices[ offset + 2 ] = actualPos.z;
+
+                    tangents[ offset + 2 ] = 1;
+
+                    if(number >= 0) {
+
+                        uvs[ offset2     ] = ((ix / grid) * 0.5 + uvStartingPosition.x) * uvRange + 0.5;
+                        uvs[ offset2 + 1 ] = ((1 -  iy / grid) * 0.5 + uvStartingPosition.y) * uvRange + 0.5;
+
+
+                    } else {
+
+                        uvs[ offset2     ] = ix / grid;
+                        uvs[ offset2 + 1 ] = 1 - iy / grid;
+
+                    }
+
+                    actualPos.add(segment_diff_x);
+                    offset += 3;
+                    offset2 += 2;
+
+                }
+
+            }
+
+            offset = 0;
+
+            var indices = new ( ( vertices.length / 3 ) > 65535 ? Uint32Array : Uint16Array )( grid * grid * 6 );
+
+            for ( var iy = 0; iy < grid; iy ++ ) {
+
+                for ( var ix = 0; ix < grid; ix ++ ) {
+
+                    var a = ix + grid1 * iy;
+                    var b = ix + grid1 * ( iy + 1 );
+                    var c = ( ix + 1 ) + grid1 * ( iy + 1 );
+                    var d = ( ix + 1 ) + grid1 * iy;
+
+                    indices[ offset     ] = a;
+                    indices[ offset + 1 ] = b;
+                    indices[ offset + 2 ] = d;
+
+                    indices[ offset + 3 ] = b;
+                    indices[ offset + 4 ] = c;
+                    indices[ offset + 5 ] = d;
+
+                    offset += 6;
+
+                }
+
+            }
+
+            geometry.addAttribute( 'index', new THREE.BufferAttribute( indices, 1 ) );
+            geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+            geometry.addAttribute( 'tangent', new THREE.BufferAttribute( tangents, 3 ) );
+            geometry.addAttribute( 'uv', new THREE.BufferAttribute( uvs, 2 ) );
+
+            return geometry;
+
+        }
 
         function moveGeometry(geometry) {
 

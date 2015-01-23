@@ -53,16 +53,12 @@ define(["config"], function(config) {
 
     function addToQueue(genData, parameters) {
 
-        var renderData = {
-
-            renderTarget: getRenderTarget(genData),
-            param: parameters
-
-        };
+        var renderData = getRenderTargets(genData);
+        renderData.param = parameters;
 
         genData.toRender.push(renderData);
 
-        return renderData.renderTarget;
+        return renderData;
 
     }
 
@@ -81,7 +77,7 @@ define(["config"], function(config) {
                 for(var i=0; i<genData.toRender.length; i++) {
 
                     var texName = toTextureName(genData.toRender[i].param);
-                    genData.used[texName] = genData.toRender[i].renderTarget;
+                    genData.used[texName] = genData.toRender[i];
 
                 }
 
@@ -111,7 +107,8 @@ define(["config"], function(config) {
 
             } else {
 
-                genData.used[texName].dispose();
+                genData.used[texName].heightmap.dispose();
+                genData.used[texName].bumpmap.dispose();
 
             }
 
@@ -121,7 +118,7 @@ define(["config"], function(config) {
 
     }
 
-    function getRenderTarget(genData) {
+    function getRenderTargets(genData) {
 
         for(var k in genData.unused) {
 
@@ -136,7 +133,12 @@ define(["config"], function(config) {
 
         }
 
-        return genData.generator.createRenderTarget();
+        return {
+
+            heightmap: genData.generator.createRenderTarget(),
+            bumpmap: genData.generator.createRenderTarget()
+
+        }
 
     }
 

@@ -39,8 +39,8 @@ define(["three", "planet/terrainChunk"], function(THREE, TerrainChunk) {
                 size,
                 position.multiplyScalar(size / 2),
                 rotation,
-                -1
-
+                -1,
+                0
             );
 
             planet.add(chunk.mesh);

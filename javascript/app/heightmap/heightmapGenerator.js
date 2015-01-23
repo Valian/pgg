@@ -1,8 +1,9 @@
-define(["three", "renderer", "resources", "config", "heightmap/firstPass", "heightmap/secondPass"],
-       function(THREE, renderer, resources, config, FirstPass, SecondPass) {
+define(["three", "renderer", "resources", "config", "heightmap/firstPass", "heightmap/secondPass", "heightmap/bumpmapPass"],
+       function(THREE, renderer, resources, config, FirstPass, SecondPass, BumpmapPass) {
 
     return HeightmapGenerator;
 
+    HeightmapGenerator.pathToConfig = "config.config.costam";
     function HeightmapGenerator(size, properties) {
 
         this.name = properties.name;
@@ -12,6 +13,7 @@ define(["three", "renderer", "resources", "config", "heightmap/firstPass", "heig
 
         this.firstPass = new FirstPass(size, this.paralell, this.octaves);
         this.secondPass = new SecondPass(this.octaves, properties);
+        this.bumpmapPass = new BumpmapPass(properties);
 
         this.generateTextures = generateTextures;
         this.createRenderTarget = createRenderTarget;
@@ -40,6 +42,7 @@ define(["three", "renderer", "resources", "config", "heightmap/firstPass", "heig
 
                 this.firstPass.makePass(part, sourceTex);
                 this.secondPass.makePass(part, sourceTex);
+                this.bumpmapPass.makePass(part);
 
                 sourceTex.dispose();
 

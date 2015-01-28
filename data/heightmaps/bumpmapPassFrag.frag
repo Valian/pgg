@@ -23,8 +23,8 @@ void main()
     float s10 = unpack_value(texture2D(heightmapTexture, vUV + off.yz));
     float s12 = unpack_value(texture2D(heightmapTexture, vUV + off.yx));
 
-    vec3 va = normalize(vec3(texelRealSize, 0, (s21-s01) * surfaceHeight));
-    vec3 vb = normalize(vec3(0, texelRealSize, (s12-s10) * surfaceHeight));
+    vec3 va = normalize(vec3(2.0 * texelRealSize, 0, (s21-s01) * surfaceHeight));
+    vec3 vb = normalize(vec3(0, 2.0 * texelRealSize, (s12-s10) * surfaceHeight));
 
     gl_FragColor = vec4( cross(va,vb), 1.0 );
     //gl_FragColor = vec4(s12-s10, 0.0, 0.0, 1.0);

@@ -1,7 +1,7 @@
 {
 	"planetRadius": {
-        "min": 25000,
-        "max": 28000
+        "min": 80000,
+        "max": 95000
     },
     "planetSurface": {
         "min": 300,

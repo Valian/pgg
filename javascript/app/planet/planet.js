@@ -16,6 +16,7 @@ define(["three", "planet/terrainChunk"], function(THREE, TerrainChunk) {
         this.frustumCulled = false;
 
         this.update = update;
+        this.dispose = dispose;
 
         this.chunks = {
 
@@ -54,6 +55,16 @@ define(["three", "planet/terrainChunk"], function(THREE, TerrainChunk) {
             for (key in this.chunks) {
 
                 this.chunks[key].update(camera, this, this.lodMaxDetailLevel);
+
+            }
+
+        }
+
+        function dispose() {
+
+            for (key in this.chunks) {
+
+                this.chunks[key].dispose();
 
             }
 

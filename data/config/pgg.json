@@ -1,8 +1,4 @@
 {
-    "debugPlanetName": "debugPlanet",
-    "notIncludedPlanets": [
-        "template(forCopying)"
-    ],
     "debug": false,
     "random": false,
     "seed": "test",

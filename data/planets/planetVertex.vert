@@ -9,7 +9,8 @@ uniform float planetSurface;
 uniform sampler2D heightmapTex;
 uniform sampler2D bumpmapTex;
 
-const vec3 axisZ = vec3(0.0, 0.0, 1.0000001);
+const vec3 sunPos = vec3(0.0, 0.0, 0.0);
+const vec3 axisZ = vec3(0.0, 0.0, 1.000001);
 //const vec3 axisY = vec3(0.0, 1.0, 0.0);
 
 float unpack_value(const in vec4 rgba_value)
@@ -35,13 +36,15 @@ void main()
   vec3 tangent = normalize(c1);
   vec3 binormal = normalize(cross(sphereNormal, tangent));
 
-  sunDirection = transform_to_tangent_space(vec3(1.0, 1.0, 0.0), sphereNormal, tangent, binormal);
+
   surfaceLevel = unpack_value(texture2D(heightmapTex, uv));
   varNormal = texture2D(bumpmapTex, uv).xyz;
   //varNormal = transform_to_tangent_space(varNormal, sphereNormal, tangent, binormal);
 
   vec3 spherePos = sphereNormal * (planetRadius + surfaceLevel * planetSurface);
 
-
+  vec3 sunPosition = sunPos - vec3(modelMatrix * vec4(spherePos, 1.0));
+  sunDirection = transform_to_tangent_space(sunPosition, sphereNormal, tangent, binormal);
   gl_Position = projectionMatrix * modelViewMatrix * vec4(spherePos, 1.0);
+
 }

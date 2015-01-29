@@ -1,10 +1,10 @@
 varying vec3 varNormal;
 varying float surfaceLevel;
-varying vec3 sunDirection;
+varying vec3 sunPosition;
 
 vec3 apply_light(vec3 color, float emission)
 {
-  return color * max(0.0, emission + (1.0 - emission) * dot(normalize(sunDirection), normalize(varNormal)));
+  return color * max(0.0, emission + (1.0 - emission) * dot(normalize(-sunPosition), normalize(varNormal)));
 }
 
 void main()

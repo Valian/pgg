@@ -1,19 +1,29 @@
 define(["planet/planetProperties", "config"],
        function(properties, config){
 
-    var loadedPlanets = loadTypes(config.planets);
+    var planets = config.planets;
+    var typesConfig = config.config.planetTypes;
+    var types = loadTypes(planets, typesConfig);
 
-    return loadedPlanets;
+    return types;
 
+    function loadTypes(planets, config) {
 
-    function loadTypes(planets) {
+        var types = {};
+        for(var categoryName in config.data) {
 
-        var types = [];
+            var category = [];
+            for(var planetNr in config.data[categoryName]) {
 
-        for(var name in planets) {
+                var planetName = config.data[categoryName][planetNr];
+                if(!planets[planetName]) continue;
 
-            var p = properties.create(name, planets[name]);
-            types.push(p);
+                var p = properties.create(planetName, planets[planetName]);
+                category.push(p);
+
+            }
+
+            types[categoryName] = category;
 
         }
 

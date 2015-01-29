@@ -1,8 +1,12 @@
 {
 	"noiseFrequency": 2,
-	"planetSurface": {
-        "min": 300,
-        "max": 2000
+	"planetRadius": {
+        "min": 40000,
+        "max": 55000
+    },
+    "planetSurface": {
+        "min": 4000,
+        "max": 9000
     },
 	"uniforms": {
         "surfaceTex": { "type": "t", "value": "mars.png" }

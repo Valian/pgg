@@ -15,7 +15,7 @@ define(["three", "heightmap/heightmapGenerator", "resources", "utils/settings", 
 
         this.name = name;
 
-        //copy fields from config to this object
+        //copy fields from config to this object, to refactor
         settingsUtils.update(this, planetConfig.properties);
         settingsUtils.update(this, planetConfig);
         delete this.properties;
@@ -52,6 +52,7 @@ define(["three", "heightmap/heightmapGenerator", "resources", "utils/settings", 
 
             copy.material.uniforms.planetRadius = { type: "f", value: copy.planetRadius };
             copy.material.uniforms.planetSurface = { type: "f", value: copy.planetSurface };
+            copy.seed = seedGen.seed;
 
             return copy;
 

@@ -1,35 +1,66 @@
-define(['seedrandom'], function(seedrandom) {
+define(['seedrandom', 'utils/math'],
+       function(seedrandom, MathUtils) {
 
-	function SeededRandom(seed) {
-		this.seed = seed;
-		this.random = seedrandom(this.seed.toString());
-		this.nextRandomFloatFromRange = nextRandomFloatFromRange;
-		this.nextRandomIntFromRange = nextRandomIntFromRange;
-		this.randomArrayElement = randomArrayElement;
-		this.nextRandomFloat = nextRandomFloat;
-		this.repeatableRandomFloatFromRange = repeatableRandomFloatFromRange;
-		
-		function nextRandomFloatFromRange(from, to) {
-			return this.random() * (to - from) + from;
-		}
+    function SeededRandom(seed) {
 
-		function nextRandomIntFromRange(from, to) {
-			return Math.floor(this.random() * (to - from) + from);
-		}
+        this.seed = seed;
+        this.random = seedrandom(this.seed.toString());
 
-		function repeatableRandomFloatFromRange(from, to, seed) {
-			var repeatableRandom = seedrandom(this.seed.toString() + seed.toString());
-			return repeatableRandom() * (to - from) + from;
-		}
+    }
 
-		function randomArrayElement(array) {
-			return array[this.nextRandomIntFromRange(0, array.length)]
-		}
+    SeededRandom.prototype = {
 
-		function nextRandomFloat() {
-			return this.random();
-		}
-	}
+        constructor: SeededRandom,
 
-	return SeededRandom;
+        nextRandomFloatFromRange: function(from, to) {
+
+            if(from.min && from.max) {
+
+                to = from.max;
+                from = from.min;
+
+            }
+
+            return this.random() * (to - from) + from;
+
+        },
+
+        nextRandomIntFromRange: function(from, to) {
+
+            if(from.min && from.max) {
+
+                to = from.max;
+                from = from.min;
+
+            }
+
+            return Math.floor(this.random() * (to - from) + from);
+
+        },
+
+        randomArrayElement: function(array) {
+
+            return array[this.nextRandomIntFromRange(0, array.length)];
+
+        },
+
+        nextRandomFloat: function() {
+
+            return this.random();
+
+        },
+
+        randomPointOnSphere: function(radius) {
+
+            var theta = Math.acos(2 * this.nextRandomFloat() - 1);
+            var phi = 2 * Math.PI * this.nextRandomFloat();
+
+            return MathUtils.sphericalToCartesian(radius, theta, phi);
+
+        }
+
+    }
+
+    return SeededRandom;
+
 });

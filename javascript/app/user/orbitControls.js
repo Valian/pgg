@@ -19,7 +19,8 @@ define(['three', 'utils/keyCodes'], function(THREE, KEY_CODES) {
 
 		function init(system) {
 			this.system = system;
-			this.controlsObject.target = this.system.planets[0].position.clone();
+			var sun = that.system.sun;
+            changeOrbitTarget(sun, sun.planetRadius * 5);
 		}
 
 		function update(deltaTime) {
@@ -27,6 +28,9 @@ define(['three', 'utils/keyCodes'], function(THREE, KEY_CODES) {
 		}
 
 		function changePlanetOnKeyDown(e) {
+
+            var prevPlanetNumber = that.currentPlanet;
+
 			if(that.system) {
 				switch(e.keyCode) {
 					case KEY_CODES.LEFT_ARROW:
@@ -39,9 +43,24 @@ define(['three', 'utils/keyCodes'], function(THREE, KEY_CODES) {
 						that.currentPlanet = (that.currentPlanet + 1) % that.system.planets.length;
 						break;
 				}
-				that.controlsObject.target = that.system.planets[that.currentPlanet].position.clone();
+
 			}
+
+            if(prevPlanetNumber !== that.currentPlanet) {
+
+                var planet = that.system.planets[that.currentPlanet];
+                changeOrbitTarget(planet, planet.planetRadius * 5);
+
+            }
 		}
+
+        function changeOrbitTarget(target, distance) {
+
+            that.controlsObject.target = target.position.clone();
+            that.camera.position.copy(target.position);
+            that.camera.position.z -= distance;
+
+        }
 
 		function disableOrbitControlsOnLeftCtrlDown(e) {
 			if(e.keyCode == KEY_CODES.CTRL) {
@@ -57,6 +76,7 @@ define(['three', 'utils/keyCodes'], function(THREE, KEY_CODES) {
 
 		function changeSystemOnClick(e) {
 			if(!that.controlsObject.enabled) {
+                debugger;
 				that.app.switchSystem(
 					Math.floor(200 * Math.random()),
 					Math.floor(200 * Math.random()),

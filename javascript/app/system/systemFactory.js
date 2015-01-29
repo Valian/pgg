@@ -1,59 +1,48 @@
 define(['utils/seededRandom', 'config', 'utils/math', 'factories/planetFactory', 'system/system'],
-	function(SeededRandom, config, MathUtils, PlanetFactory, System) {
+    function(SeededRandom, config, MathUtils, PlanetFactory, System) {
 
-	var systemFactoryConfig = config.config.systemFactory;
+    var systemFactoryConfig = config.config.systemFactory;
 
-	function SystemFactory(factorySeed) {
-		this.factorySeed = factorySeed;
+    function SystemFactory(factorySeed) {
 
-		this.createSystem = function(x, y, z) {
-			var seededRandom = new SeededRandom(factorySeed + x + y + z);
-			var numberOfPlanets = this.generateNumberOfPlanets(seededRandom);
-			var orbitsRadiuses = this.generateOrbitsRadiuses(seededRandom, numberOfPlanets);
-			var planetsPositions = this.generatePlanetsPositions(seededRandom, orbitsRadiuses);
-			var planetFactory = new PlanetFactory(seededRandom.nextRandomFloat());
-			var planets = [];
-			for(var i=0; i<numberOfPlanets; i++) {
-				var planet = planetFactory.createPlanet(seededRandom.nextRandomFloat());
-				planet.position.x = planetsPositions[i][0];
-				planet.position.y = planetsPositions[i][1];
-				planet.position.z = planetsPositions[i][2];
-				planets.push(planet);
-			}
-			return new System(null, planets);
-		};
+        var that = this;
 
-		this.generateNumberOfPlanets = function(systemSeededRandom) {
-			return systemSeededRandom.nextRandomIntFromRange(
-				systemFactoryConfig.numberOfPlanets.min,
-				systemFactoryConfig.numberOfPlanets.max
-			);
-		};
+        this.factorySeed = factorySeed;
+        this.orbitDelta = systemFactoryConfig.orbitRadiusDelta;
+        this.planetsRange = systemFactoryConfig.numberOfPlanets;
+        this.distanceFromSun = systemFactoryConfig.distanceFromSun;
 
-		this.generateOrbitsRadiuses = function(systemSeededRandom, numberOfPlanets) {
-			var radiuses = [];
-			var currentRadius = 0;
-			for(var i=0; i<numberOfPlanets; i++) {
-				var radius = systemSeededRandom.nextRandomFloatFromRange(
-					systemFactoryConfig.orbitRadiusDelta.min,
-					systemFactoryConfig.orbitRadiusDelta.max
-				);
-				currentRadius += radius;
-				radiuses.push(currentRadius);
-			}
-			return radiuses;
-		};
+        this.createSystem = createSystem;
 
-		this.generatePlanetsPositions = function(systemSeededRandom, orbitsRadiuses) {
-			var planetsPositions = [];
-			for(var i=0; i<orbitsRadiuses.length; i++) {
-				var theta = systemSeededRandom.nextRandomFloatFromRange(0, 2*Math.PI);
-				var phi = systemSeededRandom.nextRandomFloatFromRange(0, 2*Math.PI);
-				planetsPositions.push(MathUtils.sphericalToCartesian(orbitsRadiuses[i], theta, phi))
-			}
-			return planetsPositions;
-		};
-	}
+        function createSystem(x, y, z) {
 
-	return SystemFactory;
+            var seed = factorySeed + x + y + z;
+
+            var planetFactory = new PlanetFactory(seed);
+            var seededGen = new SeededRandom(seed);
+            var numberOfPlanets = seededGen.nextRandomIntFromRange(that.planetsRange);
+            var planets = [];
+            var currentRadius = seededGen.nextRandomFloatFromRange(that.distanceFromSun);
+
+            for(var i=0; i<numberOfPlanets; i++) {
+
+                var planetSeed = seededGen.nextRandomFloat();
+                var planet = planetFactory.createPlanet(planetSeed);
+
+                currentRadius += seededGen.nextRandomFloatFromRange(that.orbitDelta);
+                planet.position.copy(seededGen.randomPointOnSphere(currentRadius));
+
+                planets.push(planet);
+
+            }
+
+            var sunSeed = seededGen.nextRandomFloat();
+            var sun = planetFactory.createStar(sunSeed);
+
+            return new System(sun, planets);
+        };
+
+    }
+
+    return SystemFactory;
 });

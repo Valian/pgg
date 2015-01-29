@@ -1,74 +1,45 @@
-define(['utils/seededRandom', 'planet/planetTypes', 'planet/planet', 'seedrandom'],
-	function(SeededRandom, planetTypes, Planet, seedrandom) {
+define(['utils/seededRandom', 'planet/planetTypes', 'planet/planet', 'seedrandom', 'config'],
+	function(SeededRandom, planetTypes, Planet, seedrandom, config) {
+
+    var factoryConfig = config.config.planetFactory;
+
+    return PlanetFactory;
 
 	function PlanetFactory(factorySeed) {
+
+        var that = this;
+
 		this.factorySeed = factorySeed;
+        this.planetCategory = factoryConfig.planetsCategoryName;
+        this.starsCategory = factoryConfig.starsCategoryName;
+
 		this.createPlanet = createPlanet;
-		this.generateRandomPlanetAttributes = generateRandomPlanetAttributes;
+        this.createStar = createStar;
 
-	    function createPlanet(seed) {
-	    	var seededRandom = new SeededRandom(this.factorySeed + seed);
 
-	        var planetType = seededRandom.randomArrayElement(planetTypes);
-	        var attributes = planetType.generateRandomAttributes(seededRandom);
-            attributes.seed = seed;
+        function createPlanet(seed) {
 
-	        return new Planet(attributes);
+            var types = planetTypes[that.planetCategory];
+            return createObject(seed, types);
 
 	    }
 
-	    function generateRandomPlanetAttributes(planetType, seededRandom) {
+        function createStar(seed) {
 
-	        var attributes = {
-
-	            planetRadius: seededRandom.nextRandomFloatFromRange(
-
-                    planetType.planetRadius.min,
-	            	planetType.planetRadius.max
-
-                ),
-	            planetSurface: seededRandom.nextRandomFloatFromRange(
-
-                    planetType.planetSurface.min,
-	            	planetType.planetSurface.max
-
-                ),
-                multipliers: generateRandomMultipliers(
-
-                    seededRandom,
-                    planetType.noiseMultipliers
-
-                ),
-	            material: planetType.material.clone()
-
-	        };
-
-	        return attributes;
-
-	    }
-
-        function generateRandomMultipliers(seededRandom, multipliers) {
-
-            var generated = [];
-
-            for(var i=0; i < multipliers.length; i++) {
-
-                generated.push({
-
-                    weight: multipliers[i].weight,
-                    frequency: seededRandom.nextRandomFloatFromRange(
-                        multipliers[i].frequency.min,
-                        multipliers[i].frequency.max
-                    )
-
-                })
-
-            }
-
-            return generated;
+            var types = planetTypes[that.starsCategory];
+            return createObject(seed, types);
 
         }
-	}
 
-	return PlanetFactory;
+        function createObject(seed, arrayOfTypes) {
+
+            var seededRandom = new SeededRandom(that.factorySeed + seed);
+            var objectType = seededRandom.randomArrayElement(arrayOfTypes);
+            var attributes = objectType.generateRandomAttributes(seededRandom);
+
+            return new Planet(attributes);
+
+        }
+
+	}
 });

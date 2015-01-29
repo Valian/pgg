@@ -19,8 +19,13 @@ define(['three', 'user/fpsControls', 'user/orbitControls', 'utils/keyCodes'],
 		this.controlsArray[this.currentControls].enabled = true;
 
 		function setCurrentSystem(system) {
-			this.currentSystem = system;
-			this.controlsArray[this.currentControls].init(this.currentSystem);
+            this.currentSystem = system;
+
+            for(var i = 0; i < that.controlsArray.length; i++) {
+
+                this.controlsArray[this.currentControls].init(this.currentSystem);
+
+            }
 		}
 
 		function update(deltaTime) {

@@ -28,24 +28,25 @@ define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
         this.switchSystem = switchSystem;
 
         function run() {
-            this.galaxy.setCurrentSystemIndices(0, 12, 0);
-            this.skybox = this.galaxy.currentSkybox;
-            this.system = this.galaxy.currentSystem;
 
-            this.scene.add(this.skybox);
-            this.scene.add(this.system.objects);
-            this.controls.setCurrentSystem(this.system);
-
-            //while(this.scene.children.length > 0) {
-            //    this.scene.remove(this.scene.children[0]);
-            //}
+            this.switchSystem(0, 0, 0);
 
             this.onFrame();
+
         }
 
         function switchSystem(x, y, z) {
+
+            if(this.system) {
+
+                this.system.dispose();
+
+            }
+
             while(this.scene.children.length > 0) {
+
                 this.scene.remove(this.scene.children[0]);
+
             }
 
             this.galaxy.setCurrentSystemIndices(x, y, z);
@@ -53,11 +54,13 @@ define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
             this.system = this.galaxy.currentSystem;
 
             this.scene.add(this.skybox);
-            this.scene.add(this.system.objects);
+            this.scene.add(this.system);
             this.controls.setCurrentSystem(this.system);
+
         }
 
         function onFrame() {
+
             requestAnimationFrame(function() { that.onFrame(); });
 
             this.galaxy.update(this.camera)
@@ -68,7 +71,9 @@ define(['three', 'renderer', 'stats', 'heightmap/heightmapManager',
 
             renderer.render(this.scene, this.camera.perspectiveCamera);
             stats.update(renderer);
+
         }
+
     }
 
     return App;

@@ -13,7 +13,8 @@ define( function (require) {
         merge: merge,
         update: update,
         setHeightmap: setHeightmap,
-        generateHeightmap: generateHeightmap
+        generateHeightmap: generateHeightmap,
+        dispose: dispose
 
     };
 
@@ -117,8 +118,7 @@ define( function (require) {
 
         for (var i = 0; i < this.chunks.length; i++) {
 
-            this.chunks[i].merge();
-            this.chunks[i].mesh.disposeMesh();
+            this.chunks[i].dispose();
 
         }
 
@@ -126,6 +126,19 @@ define( function (require) {
 
         this.chunks = [];
         this.isDivided = false;
+
+    }
+
+    function dispose() {
+
+        for (var i = 0; i < this.chunks.length; i++) {
+
+            this.chunks[i].dispose();
+
+        }
+
+        heightmapManager.markAsUnused(this.heightmapParams);
+        this.mesh.disposeMesh();
 
     }
 
@@ -149,7 +162,7 @@ define( function (require) {
 
     function update(camera, planet, maxDetailLevel) {
 
-          this.lod.update(this, planet.position, maxDetailLevel, camera);
+        this.lod.update(this, planet.position, maxDetailLevel, camera);
 
         this.visibleByCamera = visibilityTest(camera, this, planet.position);
         this.mesh.visible = this.visibleByCamera && !this.isDivided;

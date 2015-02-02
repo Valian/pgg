@@ -18,7 +18,7 @@ define(['three', 'utils/keyCodes'], function(THREE, KEY_CODES) {
 		this.controlsObject.noPan = true;
 
 		function init(system) {
-			this.system = system;
+			that.system = system;
 			var sun = that.system.sun;
             changeOrbitTarget(sun, sun.planetRadius * 5);
 		}

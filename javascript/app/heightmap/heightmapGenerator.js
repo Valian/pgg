@@ -22,7 +22,6 @@ define(["three", "renderer", "resources", "config", "heightmap/firstPass", "heig
         function generateTextures(parametersArray) {
 
             var paramCopy = parametersArray.slice();
-            var clock = new THREE.Clock();
 
             do {
 
@@ -30,8 +29,7 @@ define(["three", "renderer", "resources", "config", "heightmap/firstPass", "heig
 
                 var count = part.length;
 
-                clock.getDelta();
-
+                //renderTarget for first pass
                 var sourceTex = createRenderTarget(
 
                     this.size * this.octaves,
@@ -39,10 +37,16 @@ define(["three", "renderer", "resources", "config", "heightmap/firstPass", "heig
 
                 );
 
+                //generate all octaves of all requested heightmaps in one render call
                 this.firstPass.makePass(part, sourceTex);
+
+                //merge octaves into final heightmaps
                 this.secondPass.makePass(part, sourceTex);
+
+                //generate normals from heightmaps
                 this.bumpmapPass.makePass(part);
 
+                //dispose render target
                 sourceTex.dispose();
 
             } while (paramCopy.length > 0);

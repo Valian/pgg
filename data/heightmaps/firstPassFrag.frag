@@ -79,6 +79,10 @@ float snoise(vec3 v)
                                 dot(p2,x2), dot(p3,x3) ) );
 }
 
+varying vec3 varyingPosition;
+varying float mult;
+varying float seed;
+
 vec4 pack_value(const in float value)
 {
     const vec4 bit_shift = vec4(256.0*256.0*256.0, 256.0*256.0, 256.0, 1.0);
@@ -94,11 +98,6 @@ float unpack_value(const in vec4 rgba_value)
     float depth = dot(rgba_value, bit_shift);
     return depth;
 }
-
-varying vec3 varyingPosition;
-varying float mult;
-varying float seed;
-
 
 void main()
 {

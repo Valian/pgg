@@ -15,10 +15,13 @@ define(['three', 'utils/seededRandom', 'config'],
         function generate(middlePos) {
 
             var seed = that.seed + middlePos.x.toFixed + middlePos.y.toFixed + middlePos.z.toFixed;
-            var gen = new SeededRandom(seed);
+            var gen = new SeededRandom(seed);   //random number generator with seed
             var data = [];
             var starSize = config.config.skybox.starSizeInRadians;
 
+            //we iterate over each sub-cube of visible space and randomize position
+            //for each star using uniform random distibution on sphere
+            //algorithm: http://mathworld.wolfram.com/SpherePointPicking.html
             for(var x = -that.size / 2; x < that.size / 2; x++) {
 
                 for(var y = -that.size / 2; y < that.size / 2; y++) {

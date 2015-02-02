@@ -7,15 +7,15 @@ define(["planet/planetProperties", "config"],
 
     return types;
 
-    function loadTypes(planets, config) {
+    function loadTypes(planets, data) {
 
         var types = {};
-        for(var categoryName in config.data) {
+        for(var categoryName in data) {
 
             var category = [];
-            for(var planetNr in config.data[categoryName]) {
+            for(var planetNr in data[categoryName]) {
 
-                var planetName = config.data[categoryName][planetNr];
+                var planetName = data[categoryName][planetNr];
                 if(!planets[planetName]) continue;
 
                 var p = properties.create(planetName, planets[planetName]);

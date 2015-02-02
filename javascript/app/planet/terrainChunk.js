@@ -80,6 +80,7 @@ define( function (require) {
 
         if (this.isDivided) return;
 
+        //generate heightmap for created chunks
         var heightmap = this.generateHeightmap();
         var position = this.relativePosition;
 
@@ -92,15 +93,16 @@ define( function (require) {
 
             var chunk = new TerrainChunk(
 
-                this.properties,
-                this.size / 2,
-                newCenter,
-                this.rotation,
-                i,
-                this.level + 1
+                this.properties,    //properties of the planet
+                this.size / 2,      //size is half of current size
+                newCenter,          //calculated center
+                this.rotation,      //same orientation in space
+                i,                  //corner number for UV calculations
+                this.level + 1      //recirsive level
 
             );
 
+            //all created chunks use different chunks of generated heightmap
             chunk.setHeightmap(heightmap);
 
             this.chunks.push(chunk);
@@ -116,12 +118,14 @@ define( function (require) {
 
         if (!this.isDivided) return;
 
+        //dispose all child chunks
         for (var i = 0; i < this.chunks.length; i++) {
 
             this.chunks[i].dispose();
 
         }
 
+        //mark current heightmap as unused, to be deleted in future
         heightmapManager.markAsUnused(this.heightmapParams);
 
         this.chunks = [];

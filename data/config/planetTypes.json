@@ -1,17 +1,15 @@
 {
-    "data": {
-        "planets": [
-            "ice",
-            "lava",
-            "mars-like",
-            "terran",
-            "volcanic"
-        ],
-        "stars": [
-            "sun"
-        ],
-        "debugPlanets": [
-            "debugPlanet"
-        ]
-    }
+    "planets": [
+        "ice",
+        "lava",
+        "mars-like",
+        "terran",
+        "volcanic"
+    ],
+    "stars": [
+        "sun"
+    ],
+    "debugPlanets": [
+        "debugPlanet"
+    ]
 }

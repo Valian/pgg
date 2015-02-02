@@ -23,7 +23,7 @@ define(['three', 'user/fpsControls', 'user/orbitControls', 'utils/keyCodes'],
 
             for(var i = 0; i < that.controlsArray.length; i++) {
 
-                this.controlsArray[this.currentControls].init(this.currentSystem);
+                this.controlsArray[i].init(this.currentSystem);
 
             }
 		}

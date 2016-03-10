@@ -1,16 +1,15 @@
-pgg
-===
-
 Procedural Galaxy Generation
+===
 
 The engineer thesis about generating procedural, spherical terrain. Involves techniques like chunked LOD, shader-based vertex displacement, real time terrain heightmap generation and others.
 
 Usage
 ===
 
-run from console file run.sh, then visit localhost:8000. 
+    pip install -r requirements.txt
+    ./run.sh
 
-Some commits may be unstable, as project is still under heavy development. 
+then visit localhost:8000. 
 
 Technologies
 ===

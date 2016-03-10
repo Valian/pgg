@@ -4,13 +4,35 @@
 		<meta content="utf-8" http-equiv="encoding">
 		<title>pgg</title>
 		<style>
-			body { margin: 0; }
+			body {
+              text-align: center;
+              margin: 0;
+              overflow: hidden;
+              color: #808080;
+              font-family: Monospace;
+              font-size:13px;
+            }
 			canvas { width: 100%; height: 100%; }
+            #info {
+              position: absolute;
+              top: 0px; width: 100%;
+              padding: 5px;
+              z-index: 100;
+              color: #ddd;
+              text-shadow: 0 0 1px rgba(0,0,0,1);
+            }
 		</style>
         <script src="javascript/config.js"></script>
         <script data-main="../main" src="javascript/lib/require.js"></script>
 	</head>
 	<body>
+        <div id="info">
+          Procedural Galaxy Generation - link to repo <a href="https://github.com/Valian/pgg">here</a><br>
+          Controls: space - change camera<br>
+          Always: arrows change planet, mouse change camera direction
+          Orbit camera: scroll zoom<br>
+          Floating camera: WSAD camera movement, QE change rotation
+        </div>
         <div id="threejs-container"></div>
 	</body>
 </html>

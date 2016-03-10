@@ -14,7 +14,6 @@ define(['three', 'utils/keyCodes'], function(THREE, KEY_CODES) {
 		window.addEventListener('keydown', changePlanetOnKeyDown);
 		window.addEventListener('keydown', disableOrbitControlsOnLeftCtrlDown);
 		window.addEventListener('keyup', enableOrbitControlsOnLeftCtrlUp);
-		window.addEventListener('click', changeSystemOnClick);
 		this.controlsObject.noPan = true;
 
 		function init(system) {
@@ -76,7 +75,6 @@ define(['three', 'utils/keyCodes'], function(THREE, KEY_CODES) {
 
 		function changeSystemOnClick(e) {
 			if(!that.controlsObject.enabled) {
-                debugger;
 				that.app.switchSystem(
 					Math.floor(200 * Math.random()),
 					Math.floor(200 * Math.random()),

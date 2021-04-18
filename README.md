@@ -9,6 +9,10 @@ Usage
     pip install -r requirements.txt
     ./run.sh
 
+or
+
+    docker-compose up
+
 then visit localhost:8000. 
 
 Technologies

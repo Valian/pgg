@@ -1,0 +1,9 @@
+version: '2'
+services:
+  web:
+    build: .
+    command: python python/server.py
+    volumes:
+      - .:/srv
+    ports:
+      - 127.0.0.1:8000:8000
